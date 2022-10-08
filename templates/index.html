@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css">
+{% endblock %}
+{% block title %}
+Home
+{% endblock %}
+{% block main %}
+<div class="d-flex justify-content-center align-items-center my-5">
+  <div id="map" style="height: 500px; width: 1000px;"></div>
+  <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script>
+  <script src="./static/js/main.js"></script>
+{% endblock %}
