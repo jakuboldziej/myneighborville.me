@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block main %}
+<div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center flex-column">
+<form method="POST" class="form-group">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input type="text" name="username" class="form-control" placeholder="JohnDoe" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" placeholder="*********" required>
+  </div>
+  <p>Don't have an account? Create one <a href="/register" class="text-decoration-none">Here</a>.</p>
+  <button type="submit" class="btn btn-success">Login</button>
+</form>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li class="text-danger">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+</div>
+{% endblock %}

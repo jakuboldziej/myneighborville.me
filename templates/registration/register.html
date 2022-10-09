@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block head %}
+<style>
+#contener{
+  position: absolute;
+  left: 50%;
+  max-height: 0px;
+  margin-top: 10px;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<div id="contener" class="translate-middle">
+<form method="POST" class="form-group">
+  {% csrf_token %}
+  {{form}}
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input type="text" name="username" class="form-control" placeholder="JohnDoe" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">First Name</label>
+    <input type="text" name="firstName" class="form-control" placeholder="John" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Last Name</label>
+    <input type="text" name="lastName" class="form-control" placeholder="Doe" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">E-mail</label>
+    <input type="email" name="email" class="form-control" placeholder="john.doe@gmail.com" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Location</label>
+    <input type="text" name="location" class="form-control" placeholder="Poland" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Phone Number</label>
+    <input type="text" name="phoneNumber" class="form-control" placeholder="111222333" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" placeholder="*********" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" placeholder="*********" required>
+  </div>
+  <p>Already have a account? Log In <a href="/login" class="text-decoration-none">Here</a>.</p>
+  <button type="submit" class="btn btn-success">Register</button>
+</form>
+</div>
+{% endblock %}

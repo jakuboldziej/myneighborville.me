@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/map.css' %}">
+{% endblock %}
+{% block title %}
+Map
+{% endblock %}
+{% block main %}
+  <div id="map"></div>
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw&callback=initMap"
+    async defer></script>
+{% endblock %}
