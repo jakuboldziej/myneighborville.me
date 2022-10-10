@@ -1,14 +1,74 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}Map{% endblock %}
+
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/map.css' %}">
 {% endblock %}
-{% block title %}
-Map
-{% endblock %}
+
 {% block main %}
   <div id="map"></div>
-  <script src="{% static 'js/main.js' %}"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw&callback=initMap"
+  {% comment %} <script src="{% static 'js/main.js' %}"></script> {% endcomment %}
+  <script type="text/javascript">
+    function initMap(){
+      {% for marker in markers %}
+      const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
+      {% endfor %}
+    
+      map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: Wrocław,
+      });
+
+      // Creating markers
+      {% for marker in markers %}
+      infowindow{{marker.id}} = new google.maps.InfoWindow({
+        content: "{{marker.content}}",
+      });
+      marker{{marker.id}} = new google.maps.Marker({
+        position: {lat: {{marker.latitude}}, lng: {{marker.longitude}}},
+        map: map,
+        title: "{{marker.title}}",
+      });
+      marker{{marker.id}}.addListener("click", () => {
+        infowindow{{marker.id}}.open({
+          anchor: marker{{marker.id}},
+          map,
+          shouldFocus: false,
+        });
+      });
+      {% endfor %}
+    }
+    function createCenterControl(map) {
+      const controlButton = document.createElement("button");
+    
+      // Set CSS for the control.
+      controlButton.style.backgroundColor = "#fff";
+      controlButton.style.border = "2px solid #fff";
+      controlButton.style.borderRadius = "3px";
+      controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+      controlButton.style.color = "rgb(25,25,25)";
+      controlButton.style.cursor = "pointer";
+      controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+      controlButton.style.fontSize = "16px";
+      controlButton.style.lineHeight = "38px";
+      controlButton.style.margin = "8px 0 22px";
+      controlButton.style.padding = "0 5px";
+      controlButton.style.textAlign = "center";
+    
+      controlButton.textContent = "Center Map";
+      controlButton.title = "Click to recenter the map";
+      controlButton.type = "button";
+    
+      // Setup the click event listeners: simply set the map to Chicago.
+      controlButton.addEventListener("click", () => {
+        map.setCenter(chicago);
+      });
+    
+      return controlButton;
+    }
+    window.initMap = initMap;
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initMap"
     async defer></script>
 {% endblock %}

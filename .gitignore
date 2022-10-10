@@ -1,4 +1,4 @@
 __pycache__
 migrations
-db.sglite3
-db.sglite2
+db.sqlite3
+db.sqlite2

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Event{% endblock %}
+{% block head %}
+<style>
+#contener{
+  position: absolute;
+  left: 50%;
+  max-height: 0px;
+  margin-top: 10px;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<div id="contener" class="translate-middle">
+  <h1>Add New Event</h1>
+<form method="POST" class="form-group">
+    {% csrf_token %}
+    {{form}}
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input type="text" name="title" class="form-control" placeholder="Title..." required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" placeholder="Description..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Add</button>
+  </form>
+</div>
+{% endblock %}

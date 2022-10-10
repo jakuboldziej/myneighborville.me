@@ -8,3 +8,32 @@ class WebsiteUser(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class News(models.Model):
+    user = models.ManyToManyField(WebsiteUser)
+    title = models.CharField(max_length=100)
+    description = models.TextField(max_length=10000)
+
+    def __str__(self):
+        return self.title
+
+class Event(models.Model):
+    user = models.ManyToManyField(WebsiteUser)
+    title = models.CharField(max_length=100)
+    description = models.TextField(max_length=10000)
+    dateStart = models.DateField()
+    dateEnd = models.DateField()
+    timeStart = models.TimeField(auto_now=False, auto_now_add=False)
+    timeEnd = models.TimeField(auto_now=False, auto_now_add=False)
+    
+    def __str__(self):
+        return self.title
+
+class Marker(models.Model):
+    latitude = models.CharField(max_length=100)
+    longitude = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    content = models.TextField(max_length=10000)
+
+    def __str__(self):
+        return self.title

@@ -1,0 +1,50 @@
+#baner{
+    background-color: grey;
+    width: 100%; 
+    padding: 10px;   
+}
+#lewy{
+    background-color: black;
+    color: white;
+    width: 50%;
+    min-height: 100vh;
+    padding: 10px;
+    
+}
+#lewy-content{
+    display: flex;
+    flex-wrap:wrap;
+    align-content: flex-start;
+}
+#prawy{
+    background-color: rgb(77, 71, 71);
+    color: white;
+    width: 50%;
+    min-height: 100vh;
+    padding: 10px;
+
+}
+#prawy-content{
+    display: flex;
+    flex-wrap:wrap;
+    align-content: flex-start;
+}
+.event{
+    width: 50%;
+    height: 190px;
+    overflow: hidden;
+    padding: 5px;
+}
+.news{
+    width: 50%;
+    height: 190px;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.event .btn{
+    position: absolute;
+    bottom: -1vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

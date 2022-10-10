@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{user.username}}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="d-flex flex-wrap">
+        <div id="baner" class="d-flex justify-content-center align-items-center">
+            <h2>{{currentUser.username}}</h2>
+        </div>
+        <div id="lewy">
+            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <a class="btn btn-success" href="/add_event">Add</a>
+                <h1>Events</h1>
+            </span>
+            <div id="lewy-content">
+                {% for event in userEvents %}
+                <div class="event card text-center text-bg-secondary m-2" style="width: 18rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">{{event.title}}</h5>
+                      <p class="card-text">{{event.description}}</p>
+                      <a href="#" class="btn btn-primary">Read full</a>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="prawy">
+            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <a class="btn btn-success" href="/add_news">Add</a>
+                <h1>News</h1>
+            </span>
+            <div id="prawy-content">
+                {% for news in userNews %}
+                <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">{{event.title}}</h5>
+                      <p class="card-text">{{event.description}}</p>
+                      <a href="#" class="btn btn-primary">Read full</a>
+                    </div>
+                  </div>
+            {% endfor %}
+        </div>
+        </div>
+    </div>
+{% endblock %}

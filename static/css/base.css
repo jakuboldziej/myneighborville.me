@@ -1,0 +1,24 @@
+*{margin: 0; padding: 0; box-sizing: border-box;}
+#username{
+    background-color: inherit;
+    border: none;
+    color: white;
+}
+#userPopUp{
+    display: none;
+    z-index: 999;
+    position: absolute;
+    background-color: rgb(73, 73, 73);
+    border-radius: 10px;
+    width: 15vh;
+    right: 0.8vw;
+    top: 6vh;
+    padding: 5px;
+    text-align: center;
+}
+@media only screen and (max-width: 600px) {
+    #userPopUp {
+        left: 0.8vw;
+        top: 40vh;
+    }
+  }

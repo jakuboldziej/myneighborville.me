@@ -48,10 +48,18 @@
   </div>
   <div class="mb-3">
     <label class="form-label">Confirm Password</label>
-    <input type="password" class="form-control" placeholder="*********" required>
+    <input type="password" name="password2" class="form-control" placeholder="*********" required>
   </div>
   <p>Already have a account? Log In <a href="/login" class="text-decoration-none">Here</a>.</p>
   <button type="submit" class="btn btn-success">Register</button>
 </form>
+<br>
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">
+      Passwords don't match
+    </div>
+    {% endfor %}
+{% endif %}
 </div>
 {% endblock %}
