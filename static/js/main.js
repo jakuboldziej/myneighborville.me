@@ -1,19 +1,21 @@
-  function initMap(){
-    const wrocław = {lat: 51.1079, lng: 17.0385};
-    const rynek = {lat: 51.1104, lng: 17.0310};
+function initMap() {
+  const wrocław = { lat: 51.1079, lng: 17.0385 };
+  const rynek = { lat: 51.1104, lng: 17.031 };
 
-    map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 13,
-      center: wrocław,
-    });
-    addMarker(rynek, "Rynek", "<h1>Rynek</h1>");
-  }
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 13,
+    center: wrocław,
+  });
 
-  function addMarker(location, title, content){
+  const marker1 = new Marker(rynek, "main.js", "<h1>main.js</h1>");
+}
+
+class Marker {
+  constructor(location, title, content) {
     const infowindow = new google.maps.InfoWindow({
       content: content,
     });
-    marker = new google.maps.Marker({
+    const marker = new google.maps.Marker({
       position: location,
       map: map,
       title: title,
@@ -26,5 +28,5 @@
       });
     });
   }
-
-  window.initMap = initMap;
+}
+window.initMap = initMap;

@@ -1,0 +1,23 @@
+#events{
+    width: 50%;
+    height: 600px;
+    overflow: scroll;
+    overflow-x: hidden;
+    background-color: rgb(56, 78, 84);
+}
+#jobs{
+    width: 50%;
+    height: 600px;
+    overflow: scroll;
+    overflow-x: hidden;
+    background-color: rgb(56, 78, 84);
+}
+#news{
+    width: 100%;
+    height: 600px;
+    background-color: rgb(60, 56, 84);
+}
+.card-body{
+    max-height: 200px;
+    overflow: hidden;
+}

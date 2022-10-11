@@ -7,8 +7,9 @@
 
 {% block main %}
     <div class="d-flex flex-wrap">
-        <div id="baner" class="d-flex justify-content-center align-items-center">
+        <div id="baner" class="d-flex justify-content-center align-items-center gap-3">
             <h2>{{currentUser.username}}</h2>
+            <a class="btn btn-success" href="/add_marker">Create New Marker</a>
         </div>
         <div id="lewy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -21,9 +22,9 @@
                     <div class="card-body">
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
-                      <a href="#" class="btn btn-primary">Read full</a>
                     </div>
-                  </div>
+                    <a href="events/{{event.id}}" class="btn btn-primary">Read full</a>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -36,13 +37,30 @@
                 {% for news in userNews %}
                 <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
-                      <h5 class="card-title">{{event.title}}</h5>
-                      <p class="card-text">{{event.description}}</p>
-                      <a href="#" class="btn btn-primary">Read full</a>
+                      <h5 class="card-title">{{news.title}}</h5>
+                      <p class="card-text">{{news.description}}</p>
                     </div>
-                  </div>
-            {% endfor %}
+                    <a href="news/{{newss.id}}" class="btn btn-primary">Read full</a>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        <div id="dolny">
+            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <a class="btn btn-success" href="/add_job">Add</a>
+                <h1>Jobs</h1>
+            </span>
+            <div id="dolny-content">
+                {% for news in userNews %}
+                <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">{{news.title}}</h5>
+                      <p class="card-text">{{news.description}}</p>
+                    </div>
+                    <a href="jobs/{{job.id}}" class="btn btn-primary">Read full</a>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}

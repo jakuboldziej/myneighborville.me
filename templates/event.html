@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{event.title}}{% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<span style="display: flex; align-items: center; justify-content: center;">
+    <h1>{{event.title}}</h1>
+</span>
+<div class="d-flex p-2 justify-content-center">
+      <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
+        <div class="card-body">
+          <h3>Description: {{event.description}}</h3>
+          {% for user in event.user.all %}
+            <h5>Created by: {{user}}</h5>
+            {% endfor %}
+        </div>
+      </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Jobs{% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<span style="display: flex; align-items: center; justify-content: center;">
+    <h1>Jobs</h1>
+</span>
+  <div class="d-flex flex-wrap gap-2 p-2">
+    {% for job in jobs %}
+        <div class="event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
+          <div class="card-body">
+            <h2>Title: {{job.title}}</h2>
+            <h3>Description: {{job.description}}</h3>
+            <h5>Created at: {{job.dateStart}} {{job.timeStart}}</h5>
+            {% for user in job.user.all %}
+            <h5>Created by: {{user}}</h5>
+            {% endfor %}
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+{% endblock %}

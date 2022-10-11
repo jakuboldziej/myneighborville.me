@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import WebsiteUser, News, Event, Marker
+from .models import WebsiteUser, News, Event, Marker, Job
 
 class WebsiteUserAdmin(admin.ModelAdmin):
     fields = ('user', 'location', 'phoneNumber')
@@ -8,16 +8,21 @@ class WebsiteUserAdmin(admin.ModelAdmin):
 admin.site.register(WebsiteUser, WebsiteUserAdmin)
 
 class NewsAdmin(admin.ModelAdmin):
-    fields = ('user', 'title', 'description')
-    list_display = ['title', 'description']
+    fields = ('user', 'title', 'description', 'location', 'createdAtDate', 'createdAtTime')
+    list_display = ['title', 'description', 'location', 'createdAtDate', 'createdAtTime']
 admin.site.register(News, NewsAdmin)
+
+class EventAdmin(admin.ModelAdmin):
+    fields = ('user', 'title', 'description', 'dateStart', 'dateEnd', 'timeStart', 'timeEnd', 'location')
+    list_display = ['title', 'description', 'dateStart', 'dateEnd', 'timeStart', 'timeEnd', 'location']
+admin.site.register(Event, EventAdmin)
 
 class MarkerAdmin(admin.ModelAdmin):
     fields = ('title', 'latitude', 'longitude', 'content')
     list_display = ['title', 'latitude', 'longitude', 'content']
 admin.site.register(Marker, MarkerAdmin)
 
-class EventAdmin(admin.ModelAdmin):
-    fields = ('user', 'title', 'description', 'dateStart', 'dateEnd', 'timeStart', 'timeEnd')
-    list_display = ['title', 'description', 'dateStart', 'dateEnd', 'timeStart', 'timeEnd']
-admin.site.register(Event, EventAdmin)
+class JobAdmin(admin.ModelAdmin):
+    fields = ('userId', 'title', 'description', 'location')
+    list_display = ['userId', 'title', 'description', 'location']
+admin.site.register(Job, JobAdmin)

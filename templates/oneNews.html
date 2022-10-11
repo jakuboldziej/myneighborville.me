@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{oneNews.title}}{% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<span style="display: flex; align-items: center; justify-content: center;">
+    <h1>{{oneNews.title}}</h1>
+</span>
+<div class="d-flex p-2 justify-content-center">
+      <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
+        <div class="card-body">
+          <h3>Description: {{oneNews.description}}</h3>
+          {% for user in oneNews.user.all %}
+          <h5>Created by: {{user}}</h5>
+          {% endfor %}
+        </div>
+      </div>
+</div>
+{% endblock %}
