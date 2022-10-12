@@ -29,9 +29,15 @@ def index(request):
 
 @login_required
 def map(request):
-    markers = Marker.objects.all()
-    api_key = settings.GOOGLE_API_KEY
+    # markers = Marker.objects.all()
     userLocation = WebsiteUser.objects.get(id=request.user.id).location
+    userLocation = userLocation.replace(" ", "_")
+    # Tutaj narazie wyświetla tylko znacznik usera
+    markers = Marker.objects.filter(title=userLocation)
+
+    api_key = settings.GOOGLE_API_KEY
+
+
     context = {
         'markers': markers,
         'api_key': api_key,
@@ -189,18 +195,22 @@ def addMarker(request):
         location = request.POST['location']
         title = request.POST['title']
         content = request.POST['content']
-        locSplit = location.split(', ')
+        location = location[1:-1]
+        locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
+
+
+        title = title.replace(" ", "_")
 
         newMarker = Marker.objects.create(
             latitude=lat,
             longitude=lng,
             title=title,
-            content=content
+            content=content,
         )
         newMarker.save()
-        return redirect('/map')
+        return redirect('/add_marker')
     else:
         context = {
             'api_key': api_key,
@@ -213,11 +223,13 @@ def logout(request):
     return redirect('/')
 
 def register(request):
+    api_key = settings.GOOGLE_API_KEY
     if request.method == 'POST':
         username = request.POST['username']
         firstName = request.POST['firstName']
         lastName = request.POST['lastName']
         email = request.POST['email']
+        address = request.POST['address']
         location = request.POST['location']
         phoneNumber = request.POST['phoneNumber']
         password = request.POST['password']
@@ -240,10 +252,31 @@ def register(request):
             new_user.save()
             new_websiteUser = WebsiteUser.objects.create(
                 user=new_user,
-                location=location, 
+                location=address, 
                 phoneNumber=phoneNumber, 
             )
             new_websiteUser.save()
+            
+            location = location[1:-1]
+            locSplit = location.split(", ")
+            lat = locSplit[0]
+            lng = locSplit[1]
 
+            address = address.replace(" ", "_")
+            try:
+                newMarker = Marker.objects.create(
+                    latitude=lat,
+                    longitude=lng,
+                    title=address,
+                    content="Home",
+                )
+                newMarker.users.add(new_websiteUser)
+                newMarker.save()
+            except:
+                _ = 0
             return redirect("/login")
-    return render(request, "registration/register.html")
+    else:
+        context = {
+            'api_key': api_key,
+        }
+        return render(request, "registration/register.html", context)

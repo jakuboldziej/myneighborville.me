@@ -10,6 +10,8 @@
   <div id="map"></div>
   {% comment %} <script src="{% static 'js/main.js' %}"></script> {% endcomment %}
   <script type="text/javascript">
+    let map;
+    let markers = [];
     class Marker {
       constructor(location, title, content) {
         const infowindow = new google.maps.InfoWindow({
@@ -39,9 +41,15 @@
         zoom: 13,
         center: {{userLocation}} // zmienić na dynamiczne,
       });
-    {% for marker in markers %}
-    const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}")
-    {% endfor %}
+      map.addListener("zoom_changed", () => {
+        console.log(map.getZoom());
+      });
+    function addMarkers(){
+      {% for marker in markers %}
+      const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}")
+      {% endfor %}
+    }
+    addMarkers();
     window.initMap = initMap;
     }
   </script>

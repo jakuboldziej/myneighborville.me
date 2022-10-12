@@ -34,10 +34,12 @@ class Event(models.Model):
         return self.title
 
 class Marker(models.Model):
+    users = models.ManyToManyField(WebsiteUser)
     latitude = models.CharField(max_length=100)
     longitude = models.CharField(max_length=100)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     content = models.TextField(max_length=10000)
+    type = models.TextField(max_length=100)
 
     def __str__(self):
         return self.title

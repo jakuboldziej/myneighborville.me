@@ -1,0 +1,13 @@
+#contener{
+  position: absolute;
+  left: 25%;
+  max-height: 0px;
+  margin-top: 10px;
+}
+#map{
+  position: absolute;
+  width: 50%;
+  height: calc(100vh - 56px);
+  top: 56px;
+  right: 0;
+}

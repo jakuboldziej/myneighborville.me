@@ -9,7 +9,9 @@
     <div class="d-flex flex-wrap">
         <div id="baner" class="d-flex justify-content-center align-items-center gap-3">
             <h2>{{currentUser.username}}</h2>
+            {% if user.is_staff %}
             <a class="btn btn-success" href="/add_marker">Create New Marker</a>
+            {% endif %}
         </div>
         <div id="lewy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -23,7 +25,7 @@
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
                     </div>
-                    <a href="events/{{event.id}}" class="btn btn-primary">Read full</a>
+                    <a href="/events/{{event.id}}" class="btn btn-primary">Read full</a>
                 </div>
                 {% endfor %}
             </div>
@@ -40,7 +42,7 @@
                       <h5 class="card-title">{{news.title}}</h5>
                       <p class="card-text">{{news.description}}</p>
                     </div>
-                    <a href="news/{{newss.id}}" class="btn btn-primary">Read full</a>
+                    <a href="/news/{{news.id}}" class="btn btn-primary">Read full</a>
                 </div>
                 {% endfor %}
             </div>

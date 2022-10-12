@@ -4,7 +4,7 @@ from .models import WebsiteUser, News, Event, Marker, Job
 
 class WebsiteUserAdmin(admin.ModelAdmin):
     fields = ('user', 'location', 'phoneNumber')
-    list_display = ['location', 'phoneNumber']
+    list_display = ['user', 'location', 'phoneNumber']
 admin.site.register(WebsiteUser, WebsiteUserAdmin)
 
 class NewsAdmin(admin.ModelAdmin):
@@ -18,7 +18,7 @@ class EventAdmin(admin.ModelAdmin):
 admin.site.register(Event, EventAdmin)
 
 class MarkerAdmin(admin.ModelAdmin):
-    fields = ('title', 'latitude', 'longitude', 'content')
+    fields = ('title', 'latitude', 'longitude', 'content', 'users')
     list_display = ['title', 'latitude', 'longitude', 'content']
 admin.site.register(Marker, MarkerAdmin)
 

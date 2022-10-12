@@ -1,16 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Register{% endblock %}
 
 {% block head %}
-<style>
-#contener{
-  position: absolute;
-  left: 50%;
-  max-height: 0px;
-  margin-top: 10px;
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -19,39 +13,41 @@
   {% csrf_token %}
   {{form}}
   <div class="mb-3">
-    <label class="form-label">Username</label>
+    <label class="form-label">* Username</label>
     <input type="text" name="username" class="form-control" placeholder="JohnDoe" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">First Name</label>
+    <label class="form-label">* First Name</label>
     <input type="text" name="firstName" class="form-control" placeholder="John" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">Last Name</label>
+    <label class="form-label">* Last Name</label>
     <input type="text" name="lastName" class="form-control" placeholder="Doe" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">E-mail</label>
+    <label class="form-label">* E-mail</label>
     <input type="email" name="email" class="form-control" placeholder="john.doe@gmail.com" required>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Location</label>
-    <input type="text" name="location" class="form-control" placeholder="Poland" required>
+  <label class="form-label">* Location</label>
+  <div class="input-group mb-3">
+    <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław" aria-describedby="button-addon" required>
+      <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
+      <input id="location" name="location" class="d-none">
   </div>
   <div class="mb-3">
-    <label class="form-label">Phone Number</label>
+    <label class="form-label">* Phone Number</label>
     <input type="text" name="phoneNumber" class="form-control" placeholder="111222333" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">Password</label>
+    <label class="form-label">* Password</label>
     <input type="password" name="password" class="form-control" placeholder="*********" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">Confirm Password</label>
+    <label class="form-label">* Confirm Password</label>
     <input type="password" name="password2" class="form-control" placeholder="*********" required>
   </div>
   <p>Already have a account? Log In <a href="/login" class="text-decoration-none">Here</a>.</p>
-  <button type="submit" class="btn btn-success">Register</button>
+  <button id="register" type="submit" class="btn btn-success" disabled>Register</button>
 </form>
 <br>
 {% if messages %}
@@ -62,4 +58,44 @@
     {% endfor %}
 {% endif %}
 </div>
+<div id="map"></div>
+  <script>
+    let geocoder;
+    let map;
+    function initialize() {
+      geocoder = new google.maps.Geocoder();
+      const mapOptions = {
+        zoom: 8,
+        center: {lat: 51.1079, lng: 17.0385}
+      }
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    }
+    let counter = 0;
+    function codeAddress() {
+    console.log(document.getElementById('address').value)
+
+      const address = document.getElementById('address').value;
+      geocoder.geocode({ 'address': address}, function(results, status) {
+        document.getElementById('location').value = results[0].geometry.location;
+        if (status == 'OK' && counter == 0) {
+          map.setCenter(results[0].geometry.location);
+          const marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+          });
+          counter += 1;
+          document.getElementById('register').disabled = false;
+        } else if (counter > 0){
+          alert('Refresh the page to enter new address');
+        } 
+        else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
+  </script>
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
+</script>
+
 {% endblock %}
