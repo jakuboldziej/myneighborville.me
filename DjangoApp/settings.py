@@ -17,7 +17,7 @@ SECRET_KEY = 'django-insecure-m6u#lt5%1yaldvjoiog=&^s-07j$$7g2c6yh(cd7=loo7d(yay
 # Development
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.105.66.11', 'www.myneighborville.me', '127.0.0.1']
+ALLOWED_HOSTS = ['172.105.66.11', 'www.myneighborville.me', 'myneighborville.me', '127.0.0.1']
 
 GOOGLE_API_KEY = 'AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw'
 
@@ -72,7 +72,7 @@ WSGI_APPLICATION = 'DjangoApp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 

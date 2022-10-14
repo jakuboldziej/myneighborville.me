@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Add News{% endblock %}
+{% block title %}Add Job{% endblock %}
 {% block head %}
 <style>
 #form_contener{
@@ -29,7 +29,7 @@
 {% endblock %}
 {% block main %}
   <div id="form_contener" class="translate-middle">
-    <h1>Add New News</h1>
+    <h1>Add New Job Offer</h1>
   <form method="POST" class="form-group">
       {% csrf_token %}
       {{form}}
@@ -65,7 +65,7 @@
       geocoder = new google.maps.Geocoder();
       const mapOptions = {
         zoom: 12,
-        center: homeMarker,
+        center: homeMarker
       }
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
     }

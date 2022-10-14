@@ -30,13 +30,11 @@ def index(request):
 @login_required
 def map(request):
     api_key = settings.GOOGLE_API_KEY
-    # markers = Marker.objects.all()
     userLocation = WebsiteUser.objects.get(id=request.user.id).location
     userLocation = userLocation.replace(" ", "_")
+    markers = Marker.objects.all()
     # Tutaj narazie wyświetla tylko znacznik usera
-    markers = Marker.objects.filter(title=userLocation)
-
-
+    # markers = Marker.objects.filter(title=userLocation)
 
     context = {
         'markers': markers,
@@ -127,12 +125,14 @@ def job(request, id):
 # Events
 @login_required
 def addEvent(request):
+    currentUser = User.objects.get(id=request.user.id)
+    currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
     if request.method == "POST":
-        currentUser = User.objects.get(id=request.user.id)
-        currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
         users = [currentWebsiteUser]
         title = request.POST['title']
         description = request.POST['description']
+        address = request.POST['address']
+        location = request.POST['location']
 
         newEvent = Event.objects.create(
             title=title, 
@@ -141,62 +141,148 @@ def addEvent(request):
             dateEnd=datetime.datetime.today(),
             timeStart=datetime.datetime.utcnow(),
             timeEnd=datetime.datetime.utcnow(),
+            location=address,
             )
         newEvent.user.set(users)
         newEvent.save()
-
         currentWebsiteUser = request.session["currentWebsiteUser"]
+
+        location = location[1:-1]
+        locSplit = location.split(", ")
+        lat = locSplit[0]
+        lng = locSplit[1]
+        address = address.replace(" ", "_")
+        try:
+            newMarker = Marker.objects.create(
+                latitude=lat,
+                longitude=lng,
+                title=address,
+                content="Event",
+                type="Event",
+            )
+            newMarker.users.add(currentWebsiteUser)
+            newMarker.save()
+        except:
+            _ = 0
 
         return redirect('/profile/' + str(currentWebsiteUser))
     else:
-        return render(request, 'addEvent.html')
+        api_key = settings.GOOGLE_API_KEY
+        markers = Marker.objects.all()
+        userLocation = currentWebsiteUser.location
+        userLocation = userLocation.replace(" ", "_")
+
+        context = {
+            'api_key': api_key,
+            'markers': markers,
+            'userLocation': userLocation,
+        }
+        return render(request, 'addEvent.html', context)
 
 @login_required
 def addNews(request):
+    currentUser = User.objects.get(id=request.user.id)
+    currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
     if request.method == "POST":
-        currentUser = User.objects.get(id=request.user.id)
-        currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
         users = [currentWebsiteUser]
         title = request.POST['title']
         description = request.POST['description']
+        address = request.POST['address']
+        location = request.POST['location']
 
         newNews = News.objects.create(
             title=title, 
             description=description,
             createdAtDate=datetime.datetime.today(),
             createdAtTime=datetime.datetime.utcnow(),
-            location=currentWebsiteUser.location
+            location=address,
             )
         newNews.user.set(users)
         newNews.save()
-
         currentWebsiteUser = request.session["currentWebsiteUser"]
+
+        location = location[1:-1]
+        locSplit = location.split(", ")
+        lat = locSplit[0]
+        lng = locSplit[1]
+        address = address.replace(" ", "_")
+        try:
+            newMarker = Marker.objects.create(
+                latitude=lat,
+                longitude=lng,
+                title=address,
+                content="News",
+                type="News",
+            )
+            newMarker.users.add(currentWebsiteUser)
+            newMarker.save()
+        except:
+            _ = 0
 
         return redirect('/profile/' + str(currentWebsiteUser))
     else:
-        return render(request, 'addNews.html')
+        api_key = settings.GOOGLE_API_KEY
+        markers = Marker.objects.all()        
+        userLocation = currentWebsiteUser.location
+        userLocation = userLocation.replace(" ", "_")
+
+        context = {
+            'api_key': api_key,
+            'markers': markers,
+            'userLocation': userLocation,
+        }
+        return render(request, 'addNews.html', context)
 
 @login_required
 def addJob(request):
+    currentUser = User.objects.get(id=request.user.id)
+    currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
     if request.method == "POST":
-        currentUser = User.objects.get(id=request.user.id)
-        currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
         title = request.POST['title']
         description = request.POST['description']
+        address = request.POST['address']
+        location = request.POST['location']
 
         newJob = Job.objects.create(
             userId=currentWebsiteUser.id,
             title=title, 
             description=description,
-            location=currentWebsiteUser.location
+            location=address,
             )
         newJob.save()
-
         currentWebsiteUser = request.session["currentWebsiteUser"]
+
+        location = location[1:-1]
+        locSplit = location.split(", ")
+        lat = locSplit[0]
+        lng = locSplit[1]
+        address = address.replace(" ", "_")
+        try:
+            newMarker = Marker.objects.create(
+                latitude=lat,
+                longitude=lng,
+                title=address,
+                content="Job",
+                type="Job",
+            )
+            newMarker.users.add(currentWebsiteUser)
+            newMarker.save()
+        except:
+            _ = 0
 
         return redirect('/profile/' + str(currentWebsiteUser))
     else:
-        return render(request, 'addJob.html')
+        api_key = settings.GOOGLE_API_KEY
+        userLocation = currentWebsiteUser.location
+        userLocation = userLocation.replace(" ", "_")
+        markers = Marker.objects.all()
+
+        context = {
+            'api_key': api_key,
+            'userLocation': userLocation,
+            'markers': markers,
+        }
+        return render(request, 'addJob.html', context)
 
 @login_required
 def addMarker(request):
@@ -208,7 +294,6 @@ def addMarker(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
-
 
         title = title.replace(" ", "_")
 
@@ -222,9 +307,11 @@ def addMarker(request):
         return redirect('/add_marker')
     else:
         api_key = settings.GOOGLE_API_KEY
+        markers = Marker.objects.all()
 
         context = {
             'api_key': api_key,
+            'markers': markers,
         }
         return render(request, 'addMarker.html', context)
 
@@ -279,6 +366,7 @@ def register(request):
                     longitude=lng,
                     title=address,
                     content="Home",
+                    type="Home",
                 )
                 newMarker.users.add(new_websiteUser)
                 newMarker.save()

@@ -3,7 +3,7 @@
 {% block title %}Add Marker{% endblock %}
 {% block head %}
 <style>
-#contener{
+#form_contener{
   position: absolute;
   left: 25%;
   max-height: 0px;
@@ -12,15 +12,25 @@
 #map{
   position: absolute;
   width: 50%;
-  height: 500px;
+  height: calc(100vh - 56px);
   top: 56px;
   right: 0;
+}
+@media only screen and (max-width: 600px) {
+  #map {
+    top: 70vh;
+    width: 100%;
+  }
+  #form_contener{
+    left: 50%;
+  }
 }
 </style>
 {% endblock %}
 
 {% block main %}
-<div id="contener" class="translate-middle">
+<div id="form_contener" class="translate-middle">
+  <h1>Add New Marker</h1>
 <form method="POST" class="form-group">
     {% csrf_token %}
     <label class="form-label">Location</label>
@@ -37,33 +47,44 @@
         <label class="form-label">Content</label>
         <textarea name="content" id="content" class="form-control" placeholder="Content..." required></textarea>
       </div>
-    <button id="submit" type="submit" class="btn btn-success" >Add</button>
+    <button id="submit" type="submit" class="btn btn-success" disabled>Add</button>
   </form>
 </div>
   <div id="map"></div>
   <script>
     let geocoder;
     let map;
+
+    {% for marker in markers %}
+    {% if marker.title == userLocation%}
+    const homeMarker = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
+    {% endif %}
+    {% endfor %}
+
     function initialize() {
       geocoder = new google.maps.Geocoder();
       const mapOptions = {
-        zoom: 8,
-        center: {lat: 51.1079, lng: 17.0385}
+        zoom: 12,
+        center: homeMarker
       }
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
     }
 
     function codeAddress() {
       const address = document.getElementById('address').value;
-      geocoder.geocode( { 'address': address}, function(results, status) {
+      geocoder.geocode({ 'address': address}, function(results, status) {
         document.getElementById('location').value = results[0].geometry.location;
         if (status == 'OK') {
           map.setCenter(results[0].geometry.location);
           const marker = new google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
+            map: map,
+            position: results[0].geometry.location,
+            title: address,
           });
-        } else {
+          document.getElementById('submit').disabled = false;
+          document.getElementById('button-addon').disabled = true;
+        }
+        else {
           alert('Geocode was not successful for the following reason: ' + status);
         }
       });

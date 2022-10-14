@@ -18,8 +18,8 @@ class EventAdmin(admin.ModelAdmin):
 admin.site.register(Event, EventAdmin)
 
 class MarkerAdmin(admin.ModelAdmin):
-    fields = ('title', 'latitude', 'longitude', 'content', 'users')
-    list_display = ['title', 'latitude', 'longitude', 'content']
+    fields = ('title', 'type', 'latitude', 'longitude', 'content', 'users')
+    list_display = ['title', 'type', 'latitude', 'longitude', 'content']
 admin.site.register(Marker, MarkerAdmin)
 
 class JobAdmin(admin.ModelAdmin):

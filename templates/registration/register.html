@@ -9,8 +9,6 @@
 
 {% block main %}
 <div id="contener" class="translate-middle">
-  <span class="tt" data-bs-placement="bottom" title="asdf">asdf</span>
-
     <form method="POST" class="form-group">
   {% csrf_token %}
   {{form}}
@@ -72,25 +70,20 @@
       }
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
     }
-    let counter = 0;
     function codeAddress() {
-    console.log(document.getElementById('address').value)
-
       const address = document.getElementById('address').value;
       geocoder.geocode({ 'address': address}, function(results, status) {
         document.getElementById('location').value = results[0].geometry.location;
-        if (status == 'OK' && counter == 0) {
+        if (status == 'OK') {
           map.setCenter(results[0].geometry.location);
           const marker = new google.maps.Marker({
             map: map,
-            position: results[0].geometry.location
+            position: results[0].geometry.location,
+            title: address,
           });
-          counter += 1;
           document.getElementById('register').disabled = false;
-        } else if (counter > 0){
-          alert('Refresh the page to enter new address');
-        } 
-        else {
+          document.getElementById('button-addon').disabled = true;
+        } else {
           alert('Geocode was not successful for the following reason: ' + status);
         }
       });
@@ -98,11 +91,5 @@
   </script>
   <script async
     src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
-</script>
-<script>
-  const tooltips = document.querySelectorAll('.tt');
-  tooltips.forEach(t -> {
-    new bootstrap.Tooltip(t);
-  })
 </script>
 {% endblock %}

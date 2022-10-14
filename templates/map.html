@@ -31,28 +31,29 @@
         });
       }
     }
-    function initMap() {
+    function initialize() {
       // Do zoptymalizowania żeby brało geocoding z miasta usera  
       {% for marker in markers %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
       {% endfor %}
-    
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: {{userLocation}} // zmienić na dynamiczne,
       });
       map.addListener("zoom_changed", () => {
-        console.log(map.getZoom());
+        // console.log(map.getZoom());
+        if (map.getZoom() < 11){
+          
+        }
       });
     function addMarkers(){
       {% for marker in markers %}
-      const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}")
+      const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}");
       {% endfor %}
     }
     addMarkers();
-    window.initMap = initMap;
-    }
+    } 
   </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initMap"
+  <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initialize"
     async defer></script>
 {% endblock %}
