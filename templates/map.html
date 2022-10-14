@@ -48,7 +48,9 @@
       });
     function addMarkers(){
       {% for marker in markers %}
+      // {% if userLocation in marker.title %}
       const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}");
+      // {% endif %}
       {% endfor %}
     }
     addMarkers();

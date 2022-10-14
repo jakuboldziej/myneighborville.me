@@ -157,7 +157,7 @@ def addEvent(request):
                 latitude=lat,
                 longitude=lng,
                 title=address,
-                content="Event",
+                content=description,
                 type="Event",
             )
             newMarker.users.add(currentWebsiteUser)
@@ -211,7 +211,7 @@ def addNews(request):
                 latitude=lat,
                 longitude=lng,
                 title=address,
-                content="News",
+                content=description,
                 type="News",
             )
             newMarker.users.add(currentWebsiteUser)
@@ -262,7 +262,7 @@ def addJob(request):
                 latitude=lat,
                 longitude=lng,
                 title=address,
-                content="Job",
+                content=description,
                 type="Job",
             )
             newMarker.users.add(currentWebsiteUser)
@@ -286,6 +286,8 @@ def addJob(request):
 
 @login_required
 def addMarker(request):
+    currentUser = User.objects.get(id=request.user.id)
+    currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
     if request.method == 'POST':
         location = request.POST['location']
         title = request.POST['title']
@@ -308,10 +310,13 @@ def addMarker(request):
     else:
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()
+        userLocation = currentWebsiteUser.location
+        userLocation = userLocation.replace(" ", "_")
 
         context = {
             'api_key': api_key,
             'markers': markers,
+            'userLocation': userLocation,
         }
         return render(request, 'addMarker.html', context)
 
