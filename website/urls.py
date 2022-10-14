@@ -10,6 +10,7 @@ urlpatterns = [
     path('jobs/', views.jobs, name='jobs'),
     path('events/', views.events, name='events'),
     
+    path('profile/settings/<int:id>', views.profileSettings, name='profileSettings'),
     path('profile/<int:id>', views.profile, name='profile'),
     path('news/<int:id>', views.oneNews, name='oneNews'),
     path('events/<int:id>', views.event, name='event'),

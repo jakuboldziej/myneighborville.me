@@ -9,7 +9,9 @@
 
 {% block main %}
 <div id="contener" class="translate-middle">
-<form method="POST" class="form-group">
+  <span class="tt" data-bs-placement="bottom" title="asdf">asdf</span>
+
+    <form method="POST" class="form-group">
   {% csrf_token %}
   {{form}}
   <div class="mb-3">
@@ -97,5 +99,10 @@
   <script async
     src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
 </script>
-
+<script>
+  const tooltips = document.querySelectorAll('.tt');
+  tooltips.forEach(t -> {
+    new bootstrap.Tooltip(t);
+  })
+</script>
 {% endblock %}

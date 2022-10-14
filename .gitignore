@@ -1,5 +1,6 @@
-__pycache__
-migrations
+*/__pycache__/
+migrations/
 db.sqlite3
 db.sqlite2
-venv
+venv/
+static/admin/

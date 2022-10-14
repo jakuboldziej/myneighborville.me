@@ -29,13 +29,13 @@ def index(request):
 
 @login_required
 def map(request):
+    api_key = settings.GOOGLE_API_KEY
     # markers = Marker.objects.all()
     userLocation = WebsiteUser.objects.get(id=request.user.id).location
     userLocation = userLocation.replace(" ", "_")
     # Tutaj narazie wyświetla tylko znacznik usera
     markers = Marker.objects.filter(title=userLocation)
 
-    api_key = settings.GOOGLE_API_KEY
 
 
     context = {
@@ -71,6 +71,16 @@ def jobs(request):
 
 # Views with params
 @login_required
+def profileSettings(request, id):
+    currentUser = User.objects.get(id=id)
+    currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
+
+    context = {
+        'currentUser': currentWebsiteUser,
+    }
+    return render(request, 'settings.html', context)
+
+@login_required
 def profile(request, id):
     currentUser = User.objects.get(id=id)
     currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
@@ -80,7 +90,7 @@ def profile(request, id):
     request.session["currentWebsiteUser"] = currentWebsiteUser.id
 
     context = {
-        'currentUser': currentUser,
+        'currentUser': currentWebsiteUser,
         'userEvents': userEvents,
         'userNews': userNews,
         'userJobs': userJobs,
@@ -190,7 +200,6 @@ def addJob(request):
 
 @login_required
 def addMarker(request):
-    api_key = settings.GOOGLE_API_KEY
     if request.method == 'POST':
         location = request.POST['location']
         title = request.POST['title']
@@ -212,6 +221,8 @@ def addMarker(request):
         newMarker.save()
         return redirect('/add_marker')
     else:
+        api_key = settings.GOOGLE_API_KEY
+
         context = {
             'api_key': api_key,
         }
@@ -223,7 +234,6 @@ def logout(request):
     return redirect('/')
 
 def register(request):
-    api_key = settings.GOOGLE_API_KEY
     if request.method == 'POST':
         username = request.POST['username']
         firstName = request.POST['firstName']
@@ -276,6 +286,8 @@ def register(request):
                 _ = 0
             return redirect("/login")
     else:
+        api_key = settings.GOOGLE_API_KEY
+
         context = {
             'api_key': api_key,
         }

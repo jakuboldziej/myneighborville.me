@@ -17,7 +17,9 @@ SECRET_KEY = 'django-insecure-m6u#lt5%1yaldvjoiog=&^s-07j$$7g2c6yh(cd7=loo7d(yay
 # Development
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.105.66.11', 'www.myneighborville.me']
+ALLOWED_HOSTS = ['172.105.66.11', 'www.myneighborville.me', '127.0.0.1']
+
+GOOGLE_API_KEY = 'AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw'
 
 # Application definition
 
@@ -112,10 +114,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-#STATICFILES_DIRS = (
-#  os.path.join(BASE_DIR, 'static/'),3)
-#)
+# Production
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Development
+STATICFILES_DIRS = (
+ os.path.join(BASE_DIR, 'static/'),
+)
+
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 TEMPLATE_DIRS = (
@@ -134,4 +139,3 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = '/login'
 LOGOUT_URL = '/logout'
 
-GOOGLE_API_KEY = 'AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw'
