@@ -7,7 +7,14 @@
 {% endblock %}
 
 {% block main %}
-  <div id="map"></div>
+<form method="POST">
+  {% csrf_token %}
+  <div class="position-absolute start-50 top-50 translate-middle d-flex flex-column gap-2">
+    <input id="filter1" class="btn btn-success" value="Show only your city markers">
+    <input id="filter2" class="btn btn-success" value="Show all markers">
+  </div>
+</form>
+<div id="map"></div>
   {% comment %} <script src="{% static 'js/main.js' %}"></script> {% endcomment %}
   <script type="text/javascript">
     let map;
@@ -46,15 +53,28 @@
           
         }
       });
-    function addMarkers(){
-      {% for marker in markers %}
-      // {% if userLocation in marker.title %}
-      const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content}}");
-      // {% endif %}
-      {% endfor %}
+      const filter1 = document.getElementById('filter1')
+      const filter2 = document.getElementById('filter2')
+      function loadAllMarkers(){
+        {% for marker in markers %}
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content|safe}}");
+        {% endfor %}
+        document.getElementById('map').style.display = 'block';
+      }
+      function loadCityMarkers(){
+        {% for marker in markers %}
+        {% if userLocation in marker.title %}
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content|safe}}");
+        {% else %}
+        {% endif %}
+        {% endfor %}
+        filter1.style.display = 'none';        
+        filter2.style.display = 'none';        
+        document.getElementById('map').style.display = 'block';
+      }
+      filter1.addEventListener('click', loadCityMarkers);
+      filter2.addEventListener('click', loadAllMarkers);
     }
-    addMarkers();
-    } 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initialize"
     async defer></script>

@@ -35,7 +35,6 @@ def map(request):
     markers = Marker.objects.all()
     # Tutaj narazie wyświetla tylko znacznik usera
     # markers = Marker.objects.filter(title=userLocation)
-
     context = {
         'markers': markers,
         'api_key': api_key,
