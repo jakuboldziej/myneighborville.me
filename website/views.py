@@ -31,14 +31,24 @@ def index(request):
 def map(request):
     api_key = settings.GOOGLE_API_KEY
     userLocation = WebsiteUser.objects.get(id=request.user.id).location
+    userCity = userLocation.split(', ')[0].replace(' ', '_')
     userLocation = userLocation.replace(" ", "_")
+    userLocation = userLocation.replace(",", "")
+    userHomeMarker = Marker.objects.get(title=userLocation)
     markers = Marker.objects.all()
+    allMarkers = [marker for marker in markers if marker.type != "Home"]
+    cityMarkers = [marker for marker in markers if userCity in marker.title]
     # Tutaj narazie wyświetla tylko znacznik usera
     # markers = Marker.objects.filter(title=userLocation)
+
     context = {
         'markers': markers,
+        'allMarkers': allMarkers,
+        'cityMarkers': cityMarkers,
         'api_key': api_key,
         'userLocation': userLocation,
+        'userHomeMarker': userHomeMarker,
+        'userCity': userCity,
     }
     return render(request, 'map.html', context)
 
@@ -61,8 +71,10 @@ def events(request):
 @login_required
 def jobs(request):
     jobs = Job.objects.all().order_by('-id')
+    users = WebsiteUser.objects.all()
     context = {
         'jobs': jobs,
+        'users': users,
     }
     return render(request, 'jobs.html', context)
 
@@ -150,7 +162,7 @@ def addEvent(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
-        address = address.replace(" ", "_")
+        address = address.replace(" ", "_").replace(',', '')
         try:
             newMarker = Marker.objects.create(
                 latitude=lat,
@@ -158,6 +170,7 @@ def addEvent(request):
                 title=address,
                 content=description,
                 type="Event",
+                typeId=newEvent.id,
             )
             newMarker.users.add(currentWebsiteUser)
             newMarker.save()
@@ -204,7 +217,7 @@ def addNews(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
-        address = address.replace(" ", "_")
+        address = address.replace(" ", "_").replace(',', '')
         try:
             newMarker = Marker.objects.create(
                 latitude=lat,
@@ -212,6 +225,7 @@ def addNews(request):
                 title=address,
                 content=description,
                 type="News",
+                typeId=newNews.id
             )
             newMarker.users.add(currentWebsiteUser)
             newMarker.save()
@@ -255,7 +269,7 @@ def addJob(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
-        address = address.replace(" ", "_")
+        address = address.replace(" ", "_").replace(',', '')
         try:
             newMarker = Marker.objects.create(
                 latitude=lat,
@@ -263,6 +277,7 @@ def addJob(request):
                 title=address,
                 content=description,
                 type="Job",
+                typeId=newJob.id,
             )
             newMarker.users.add(currentWebsiteUser)
             newMarker.save()
@@ -296,13 +311,15 @@ def addMarker(request):
         lat = locSplit[0]
         lng = locSplit[1]
 
-        title = title.replace(" ", "_")
+        title = title.replace(" ", "_").replace(',', '')
 
         newMarker = Marker.objects.create(
             latitude=lat,
             longitude=lng,
             title=title,
             content=content,
+            type="add_marker",
+            typeId=9999
         )
         newMarker.save()
         return redirect('/add_marker')
@@ -363,7 +380,7 @@ def register(request):
             lat = locSplit[0]
             lng = locSplit[1]
 
-            address = address.replace(" ", "_")
+            address = address.replace(" ", "_").replace(',', '')
             try:
                 newMarker = Marker.objects.create(
                     latitude=lat,
@@ -371,6 +388,7 @@ def register(request):
                     title=address,
                     content="Home",
                     type="Home",
+                    typeId=0
                 )
                 newMarker.users.add(new_websiteUser)
                 newMarker.save()

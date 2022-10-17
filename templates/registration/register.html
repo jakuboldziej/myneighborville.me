@@ -14,7 +14,7 @@
   {{form}}
   <div class="mb-3">
     <label class="form-label">* Username</label>
-    <input type="text" name="username" class="form-control" placeholder="JohnDoe" required>
+    <input type="text" name="username" class="form-control" placeholder="JohnDoe" required autofocus>
   </div>
   <div class="mb-3">
     <label class="form-label">* First Name</label>
@@ -28,15 +28,15 @@
     <label class="form-label">* E-mail</label>
     <input type="email" name="email" class="form-control" placeholder="john.doe@gmail.com" required>
   </div>
-  <label class="form-label">* Location</label>
+  *<a href="#" id="btnModal" data-bs-toggle="modal" data-bs-target="#exampleModal">Location</a>
   <div class="input-group mb-3">
-    <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław" aria-describedby="button-addon" required>
+    <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
       <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
       <input id="location" name="location" class="d-none">
-  </div>
+    </div>
   <div class="mb-3">
-    <label class="form-label">* Phone Number</label>
-    <input type="text" name="phoneNumber" class="form-control" placeholder="111222333" required>
+    <label class="form-label">Phone Number</label>
+    <input type="text" name="phoneNumber" class="form-control" placeholder="111222333">
   </div>
   <div class="mb-3">
     <label class="form-label">* Password</label>
@@ -57,6 +57,27 @@
     </div>
     {% endfor %}
 {% endif %}
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Location Guide</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5>You can type your full address or only your city name.</h5>
+        <h5>Please type your location like this: [City], [Street name] [Home number] or just [City].</h5>
+        <h5>Example: Wrocław, Sucha 1</h5>
+        <h5>Locations are necessary for displaying your local events, news and job offers.</h5>
+        <h5>For your personal privacy locations are not available for public access.</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="map"></div>
   <script>

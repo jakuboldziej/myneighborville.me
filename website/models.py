@@ -39,7 +39,8 @@ class Marker(models.Model):
     longitude = models.CharField(max_length=100)
     title = models.CharField(max_length=100, unique=True)
     content = models.TextField(max_length=10000)
-    type = models.TextField(max_length=100)
+    type = models.CharField(max_length=100)
+    typeId = models.IntegerField()
 
     def __str__(self):
         return self.title

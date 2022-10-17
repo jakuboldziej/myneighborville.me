@@ -11,3 +11,8 @@
   top: 56px;
   right: 0;
 }
+#btnModal{
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  color: black;
+}

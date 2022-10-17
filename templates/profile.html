@@ -53,11 +53,11 @@
                 <h1>Jobs</h1>
             </span>
             <div id="dolny-content">
-                {% for news in userNews %}
-                <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                {% for job in userJobs %}
+                <div class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
-                      <h5 class="card-title">{{news.title}}</h5>
-                      <p class="card-text">{{news.description}}</p>
+                      <h5 class="card-title">{{job.title}}</h5>
+                      <p class="card-text">{{job.description}}</p>
                     </div>
                     <a href="jobs/{{job.id}}" class="btn btn-primary">Read full</a>
                 </div>

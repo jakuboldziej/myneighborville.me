@@ -14,9 +14,10 @@
           <div class="card-body">
             <h2>Title: {{job.title}}</h2>
             <h3>Description: {{job.description}}</h3>
-            <h5>Created at: {{job.dateStart}} {{job.timeStart}}</h5>
-            {% for user in job.user.all %}
+            {% for user in users %}
+            {% if user.id == job.userId %}
             <h5>Created by: {{user}}</h5>
+            {% endif %}
             {% endfor %}
           </div>
         </div>

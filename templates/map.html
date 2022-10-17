@@ -40,8 +40,11 @@
     }
     function initialize() {
       // Do zoptymalizowania żeby brało geocoding z miasta usera  
+      const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
       {% for marker in markers %}
+      {% if marker.type != "Home" %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
+      {% endif %}
       {% endfor %}
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
@@ -56,17 +59,15 @@
       const filter1 = document.getElementById('filter1')
       const filter2 = document.getElementById('filter2')
       function loadAllMarkers(){
-        {% for marker in markers %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content|safe}}");
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", "{{userHomeMarker.content|safe}}");
+        {% for marker in allMarkers %}
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
         {% endfor %}
         document.getElementById('map').style.display = 'block';
       }
       function loadCityMarkers(){
-        {% for marker in markers %}
-        {% if userLocation in marker.title %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", "{{marker.content|safe}}");
-        {% else %}
-        {% endif %}
+        {% for marker in cityMarkers %}
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
         {% endfor %}
         filter1.style.display = 'none';        
         filter2.style.display = 'none';        
