@@ -13,9 +13,9 @@ SECRET_KEY = 'django-insecure-m6u#lt5%1yaldvjoiog=&^s-07j$$7g2c6yh(cd7=loo7d(yay
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Production
-# DEBUG = False
+DEBUG = False
 # Development
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = ['139.162.150.118', 'www.myneighborville.me', 'myneighborville.me', '127.0.0.1']
 
@@ -24,7 +24,7 @@ GOOGLE_API_KEY = 'AIzaSyCvisK66zDkt5ObkbRIfm3sgpijWKdYOuw'
 # Application definition
 
 INSTALLED_APPS = [
-    # 'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -115,13 +115,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # Production
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Development
-STATICFILES_DIRS = (
- os.path.join(BASE_DIR, 'static/'),
-)
+#STATICFILES_DIRS = (
+# os.path.join(BASE_DIR, 'static/'),
+#)
 
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 TEMPLATE_DIRS = (
 	os.path.join(BASE_DIR, 'templates'),
@@ -138,4 +138,3 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = '/login'
 LOGOUT_URL = '/logout'
-
