@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Add Marker{% endblock %}
+{% block title %}Add Job{% endblock %}
 {% block head %}
 <style>
 #form_contener{
@@ -27,29 +27,29 @@
 }
 </style>
 {% endblock %}
-
 {% block main %}
-<div id="form_contener" class="translate-middle">
-  <h1>Add New Marker</h1>
-<form method="POST" class="form-group">
-    {% csrf_token %}
-    <label class="form-label">Location</label>
-    <div class="input-group mb-3">
-      <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław" aria-describedby="button-addon" required>
-      <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
-      <input id="location" name="location" class="d-none">
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <input type="text" name="title" id="title" class="form-control" placeholder="Title..." required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Content</label>
-        <textarea name="content" id="content" class="form-control" placeholder="Content..." required></textarea>
+  <div id="form_contener" class="translate-middle">
+    <h1>Add New Job Offer</h1>
+  <form method="POST" class="form-group">
+      {% csrf_token %}
+      {{form}}
+      <label class="form-label">Location</label>
+      <div class="input-group mb-3">
+        <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
+        <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
+        <input id="location" name="location" class="d-none">
       </div>
-    <button id="submit" type="submit" class="btn btn-success" disabled>Add</button>
-  </form>
-</div>
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" name="title" class="form-control" placeholder="Title..." required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" placeholder="Description..." required></textarea>
+      </div>
+      <button id="submit" type="submit" class="btn btn-success" disabled>Add</button>
+    </form>
+  </div>
   <div id="map"></div>
   <script>
     let geocoder;
@@ -69,22 +69,20 @@
       }
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
     }
-
     function codeAddress() {
       const address = document.getElementById('address').value;
-      geocoder.geocode({ 'address': address}, function(results, status) {
+      geocoder.geocode( { 'address': address}, function(results, status) {
         document.getElementById('location').value = results[0].geometry.location;
         if (status == 'OK') {
           map.setCenter(results[0].geometry.location);
           const marker = new google.maps.Marker({
-            map: map,
-            position: results[0].geometry.location,
-            title: address,
+              map: map,
+              position: results[0].geometry.location,
+              title: address,
           });
           document.getElementById('submit').disabled = false;
           document.getElementById('button-addon').disabled = true;
-        }
-        else {
+        } else {
           alert('Geocode was not successful for the following reason: ' + status);
         }
       });

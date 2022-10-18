@@ -41,11 +41,13 @@
     function initialize() {
       // Do zoptymalizowania żeby brało geocoding z miasta usera  
       const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
-      {% for marker in markers %}
-      {% if marker.type != "Home" %}
+      {% for marker in allMarkers %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
-      {% endif %}
       {% endfor %}
+
+      const dupa = `<a>asdfasdffasd</a>
+      asdfasdf`
+
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: {{userLocation}} // zmienić na dynamiczne,
@@ -66,6 +68,7 @@
         document.getElementById('map').style.display = 'block';
       }
       function loadCityMarkers(){
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", "{{userHomeMarker.content|safe}}");
         {% for marker in cityMarkers %}
         const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
         {% endfor %}

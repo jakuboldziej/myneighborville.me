@@ -2,6 +2,16 @@
 {% load static %}
 {% block title %}News{% endblock %}
 {% block head %}
+<style>
+  .news{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    transition: transform .3s ease-out;
+  }
+  .news:hover{
+    cursor: pointer;
+    transform: translate(5px, -5px);
+  }
+  </style>
 {% endblock %}
 
 {% block main %}
@@ -10,12 +20,12 @@
 </span>
   <div class="d-flex flex-wrap gap-2 p-2">
     {% for n in news %}
-        <div class="event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
+        <div onclick="location.href='/news/{{n.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 27.5rem;">
           <div class="card-body">
             <h2>Title: {{n.title}}</h2>
             <h3>Description: {{n.description}}</h3>
             {% for user in n.user.all %}
-            <h5>Created by: {{user}}</h5>
+            <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user.user.username}}">{{user}}</a></h5>
             {% endfor %}
           </div>
         </div>

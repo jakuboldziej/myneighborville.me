@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Events{% endblock %}
+{% block head %}
+<style>
+.event{
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  transition: transform .3s ease-out;
+}
+.event:hover{
+  cursor: pointer;
+  transform: translate(5px, -5px);
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<span style="display: flex; align-items: center; justify-content: center;">
+    <h1>Events</h1>
+</span>
+  <div class="d-flex flex-wrap gap-2 p-2">
+    {% for event in events %}
+    <div onclick="location.href='/events/{{event.id}}';" class="event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
+      <div class="card-body">
+        <h2>Title: {{event.title}}</h2>
+        <h3>Description: {{event.description}}</h3>
+        <h5>Start Date: {{event.dateStart}}</h5>
+        <h5>End Date: {{event.dateEnd}} <h5>
+        {% for user in event.user.all %}
+        <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user.user.username}}">{{user}}</a></h5>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

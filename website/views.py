@@ -37,7 +37,7 @@ def map(request):
     userHomeMarker = Marker.objects.get(title=userLocation)
     markers = Marker.objects.all()
     allMarkers = [marker for marker in markers if marker.type != "Home"]
-    cityMarkers = [marker for marker in markers if userCity in marker.title]
+    cityMarkers = [marker for marker in markers if userCity in marker.title and marker.type != "Home"]
     # Tutaj narazie wyświetla tylko znacznik usera
     # markers = Marker.objects.filter(title=userLocation)
 
@@ -58,7 +58,7 @@ def news(request):
     context = {
         'news': news,
     }
-    return render(request, 'news.html', context)
+    return render(request, 'displayServices/news.html', context)
 
 @login_required
 def events(request):
@@ -66,7 +66,7 @@ def events(request):
     context = {
         'events': events,
     }
-    return render(request, 'events.html', context)
+    return render(request, 'displayServices/events.html', context)
 
 @login_required
 def jobs(request):
@@ -76,27 +76,30 @@ def jobs(request):
         'jobs': jobs,
         'users': users,
     }
-    return render(request, 'jobs.html', context)
+    return render(request, 'displayServices/jobs.html', context)
 
 # Views with params
 @login_required
-def profileSettings(request, id):
-    currentUser = User.objects.get(id=id)
+def profileSettings(request, nick):
+    currentUser = User.objects.get(username=nick)
     currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
 
     context = {
         'currentUser': currentWebsiteUser,
     }
-    return render(request, 'settings.html', context)
-
+    if currentWebsiteUser.user == request.user:
+        return render(request, 'settings.html', context)
+    else:
+        return redirect('/')
+        
 @login_required
-def profile(request, id):
-    currentUser = User.objects.get(id=id)
+def profile(request, nick):
+    currentUser = User.objects.get(username=nick)
     currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
     userEvents = Event.objects.filter(user=currentWebsiteUser).order_by('id')
     userNews = News.objects.filter(user=currentWebsiteUser)
     userJobs = Job.objects.filter(userId=currentWebsiteUser.id)
-    request.session["currentWebsiteUser"] = currentWebsiteUser.id
+    request.session["currentWebsiteUser"] = currentWebsiteUser.user.username
 
     context = {
         'currentUser': currentWebsiteUser,
@@ -133,7 +136,6 @@ def job(request, id):
     }
     return render(request, 'job.html', context)
 
-# Events
 @login_required
 def addEvent(request):
     currentUser = User.objects.get(id=request.user.id)
@@ -144,14 +146,18 @@ def addEvent(request):
         description = request.POST['description']
         address = request.POST['address']
         location = request.POST['location']
+        dateStart = request.POST['dateStart']
+        dateStart = dateStart.split("T")
+        dateStart = dateStart[0] + ' ' + dateStart[1] + '+00:00'
+        dateEnd = request.POST['dateEnd']
+        dateEnd = dateEnd.split("T")
+        dateEnd = dateEnd[0] + ' ' + dateEnd[1] + '+00:00'
 
         newEvent = Event.objects.create(
             title=title, 
             description=description,
-            dateStart=datetime.datetime.today(),
-            dateEnd=datetime.datetime.today(),
-            timeStart=datetime.datetime.utcnow(),
-            timeEnd=datetime.datetime.utcnow(),
+            dateStart=dateStart,
+            dateEnd=dateEnd,
             location=address,
             )
         newEvent.user.set(users)
@@ -170,9 +176,9 @@ def addEvent(request):
                 title=address,
                 content=description,
                 type="Event",
-                typeId=newEvent.id,
             )
-            newMarker.users.add(currentWebsiteUser)
+            newMarker.events.add(newEvent)
+            # newMarker.users.add(currentWebsiteUser)
             newMarker.save()
         except:
             _ = 0
@@ -182,14 +188,14 @@ def addEvent(request):
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()
         userLocation = currentWebsiteUser.location
-        userLocation = userLocation.replace(" ", "_")
+        userLocation = userLocation.replace(" ", "_").replace(",", "")
 
         context = {
             'api_key': api_key,
             'markers': markers,
             'userLocation': userLocation,
         }
-        return render(request, 'addEvent.html', context)
+        return render(request, 'addServices/addEvent.html', context)
 
 @login_required
 def addNews(request):
@@ -206,45 +212,58 @@ def addNews(request):
             title=title, 
             description=description,
             createdAtDate=datetime.datetime.today(),
-            createdAtTime=datetime.datetime.utcnow(),
             location=address,
+            markerId=0
             )
         newNews.user.set(users)
-        newNews.save()
+        
         currentWebsiteUser = request.session["currentWebsiteUser"]
 
         location = location[1:-1]
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
-        address = address.replace(" ", "_").replace(',', '')
         try:
+            address = address.replace(" ", "_").replace(',', '')
+            checkMarker = Marker.objects.get(title=address)
+        except:
+            checkMarker = None
+        if checkMarker:
+            checkMarker.content += '<a href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
+            checkMarker.news.add(newNews)
+            checkMarker.save()
+
+            newNews.markerId = checkMarker.id
+            newNews.save()
+        else:
+            address = address.replace(" ", "_").replace(',', '')
             newMarker = Marker.objects.create(
                 latitude=lat,
                 longitude=lng,
                 title=address,
-                content=description,
+                content='<a href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>',
                 type="News",
-                typeId=newNews.id
             )
-            newMarker.users.add(currentWebsiteUser)
+            newMarker.news.add(newNews)
+            # newMarker.users.add(currentWebsiteUser)
             newMarker.save()
-        except:
-            _ = 0
+
+            newNews.markerId = newMarker.id
+            newNews.save()
 
         return redirect('/profile/' + str(currentWebsiteUser))
     else:
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()        
         userLocation = currentWebsiteUser.location
-        userLocation = userLocation.replace(" ", "_")
+        userLocation = userLocation.replace(" ", "_").replace(",", "")
 
         context = {
             'api_key': api_key,
             'markers': markers,
             'userLocation': userLocation,
         }
-        return render(request, 'addNews.html', context)
+        return render(request, 'addServices/addNews.html', context)
 
 @login_required
 def addJob(request):
@@ -277,9 +296,9 @@ def addJob(request):
                 title=address,
                 content=description,
                 type="Job",
-                typeId=newJob.id,
             )
-            newMarker.users.add(currentWebsiteUser)
+            newMarker.jobs.add(newJob)
+            # newMarker.users.add(currentWebsiteUser)
             newMarker.save()
         except:
             _ = 0
@@ -288,7 +307,7 @@ def addJob(request):
     else:
         api_key = settings.GOOGLE_API_KEY
         userLocation = currentWebsiteUser.location
-        userLocation = userLocation.replace(" ", "_")
+        userLocation = userLocation.replace(" ", "_").replace(",", "")
         markers = Marker.objects.all()
 
         context = {
@@ -296,7 +315,7 @@ def addJob(request):
             'userLocation': userLocation,
             'markers': markers,
         }
-        return render(request, 'addJob.html', context)
+        return render(request, 'addServices/addJob.html', context)
 
 @login_required
 def addMarker(request):
@@ -327,14 +346,127 @@ def addMarker(request):
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()
         userLocation = currentWebsiteUser.location
-        userLocation = userLocation.replace(" ", "_")
+        userLocation = userLocation.replace(" ", "_").replace(",", "")
 
         context = {
             'api_key': api_key,
             'markers': markers,
             'userLocation': userLocation,
         }
-        return render(request, 'addMarker.html', context)
+        return render(request, 'addServices/addMarker.html', context)
+
+@login_required
+def editEvent(request, id):
+    event = Event.objects.get(id=id)
+    if request.method == "POST":
+        title = request.POST['title']
+        description = request.POST['description']
+        dateStart = request.POST['dateStart']
+        dateEnd = request.POST['dateEnd']
+        
+        dateStart = dateStart.split("T")
+        dateStart = dateStart[0] + ' ' + dateStart[1] + '+00:00'
+        dateEnd = dateEnd.split("T")
+        dateEnd = dateEnd[0] + ' ' + dateEnd[1] + '+00:00'
+
+        event.title = title
+        event.description = description
+        event.dateStart = dateStart
+        event.dateEnd = dateEnd
+        event.save()
+
+        return redirect('/profile/' + request.user.username)
+    else:
+        context = {
+            'event': event,
+        }
+        return render(request, 'editServices/editEvent.html', context)
+
+@login_required
+def editJob(request, id):
+    job = Job.objects.get(id=id)
+    if request.method == "POST":
+        title = request.POST['title']
+        description = request.POST['description']
+
+        job.title = title
+        job.description = description
+        job.save()
+
+        return redirect('/profile/' + request.user.username)
+    else:
+        context = {
+            'job': job,
+        }
+        return render(request, 'editServices/editJob.html', context)
+
+@login_required
+def editNews(request, id):
+    news = News.objects.get(id=id)
+    if request.method == "POST":
+        title = request.POST['title']
+        description = request.POST['description']
+
+        news.title = title
+        news.description = description
+        news.save()
+
+        return redirect('/profile/' + request.user.username)
+    else:
+        context = {
+            'news': news,
+        }
+        return render(request, 'editServices/editNews.html', context)
+    
+@login_required
+def deleteEvent(request, id):
+    event = Event.objects.get(id=id)
+    marker = Marker.objects.get(id=event.markerId, type="Event")
+    event.delete()
+    marker.delete()
+    return redirect('/profile/' + request.user.username)
+
+@login_required
+def deleteJob(request, id):
+    job = Job.objects.get(id=id)
+    marker = Marker.objects.get(typeId=job.id, type="Job")
+    job.delete()
+    marker.delete()
+    return redirect('/profile/' + request.user.username)
+
+@login_required
+def deleteNews(request, id):
+    news = News.objects.get(id=id)
+    marker = Marker.objects.get(id=news.markerId, type="News")
+
+    newsLinia = '/news/' + str(news.id)
+    # jeżel linie jest None usuń też markera
+    linie = marker.content.split("</br>")
+    print(linie)
+    for i, linia in enumerate(linie):
+        if newsLinia in linia:
+            linie.pop(i)
+    print(linie)
+    result = ''
+    for i, linia in enumerate(linie):
+        if i == len(linie) - 1:
+            result += linia
+        else:
+            result += linia + '</br>'
+    print(result)
+    marker.content = result
+    marker.save()
+    news.delete()
+    return redirect('/profile/' + request.user.username)
+
+@login_required
+def deleteUserFromJob(request, jobId, userId):
+    user = WebsiteUser.objects.get(id=userId)
+    job = Job.objects.get(id=jobId)
+
+    job.people.remove(user)
+    job.save()
+    return redirect('/jobs/edit_job/' + jobId)
 
 # Auth
 def logout(request):
@@ -356,10 +488,15 @@ def register(request):
         if password != password2:
             messages.info(request, 'Passwords don\'t match!')
             return redirect("/register")
+        
         # elif len(password) < 6:
             # messages.warning(request, "Password must be at least 6 characters long.")
             # return redirect('/register')
         else:
+            users = [username.username for username in User.objects.all()]
+            if username in users:
+                messages.info(request, 'User already exists')
+                return redirect("/register")
             new_user = User.objects.create(
                 username=username,
                 password=make_password(password),
@@ -390,7 +527,7 @@ def register(request):
                     type="Home",
                     typeId=0
                 )
-                newMarker.users.add(new_websiteUser)
+                # newMarker.users.add(new_websiteUser)
                 newMarker.save()
             except:
                 _ = 0

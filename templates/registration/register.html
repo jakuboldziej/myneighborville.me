@@ -53,7 +53,7 @@
 {% if messages %}
     {% for message in messages %}
     <div class="alert alert-danger" role="alert">
-      Passwords don't match
+      {{message}}
     </div>
     {% endfor %}
 {% endif %}
