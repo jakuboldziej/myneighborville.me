@@ -9,62 +9,59 @@
     <div class="d-flex flex-wrap">
         <div id="baner" class="d-flex justify-content-center align-items-center gap-3">
             <h2>{{currentUser.user.username}}</h2>
-            {% if user.is_staff %}
-            <a class="btn btn-success" href="/add_marker">Create New Marker</a>
-            {% endif %}
         </div>
         <div id="lewy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                {% if request.user.id == currentUser.id %}
                 <a class="btn btn-success" href="/add_event">Add</a>
+                {% endif %}
                 <h1>Events</h1>
             </span>
             <div id="lewy-content">
                 {% for event in userEvents %}
-                <div class="event card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
                     </div>
-                    {% for user in event.user.all %}
-                    {% if user.user.username == request.user.username %}
-                    <a href="/events/edit_event/{{event.id}}" class="btn btn-success">Edit</a>
+                    {% if request.user.id == event.userId %}
+                    <a href="/news/edit_event/{{event.id}}" class="btn btn-success">Edit</a>
                     {% endif %}
-                    {% endfor %}
-                    <a href="/events/{{event.id}}" class="btn btn-primary">Read full</a>
                 </div>
                 {% endfor %}
             </div>
         </div>
         <div id="prawy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                {% if request.user.id == currentUser.id %}
                 <a class="btn btn-success" href="/add_news">Add</a>
+                {% endif %}
                 <h1>News</h1>
             </span>
             <div id="prawy-content">
                 {% for news in userNews %}
-                <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/news/{{news.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{news.title}}</h5>
                       <p class="card-text">{{news.description}}</p>
                     </div>
-                    {% for user in news.user.all %}
-                    {% if user.user.username == request.user.username %}
+                    {% if request.user.id == news.userId %}
                     <a href="/news/edit_news/{{news.id}}" class="btn btn-success">Edit</a>
                     {% endif %}
-                    {% endfor %}
-                    <a href="/news/{{news.id}}" class="btn btn-primary">Read full</a>
                 </div>
                 {% endfor %}
             </div>
         </div>
         <div id="dolny">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                {% if request.user.id == currentUser.id %}
                 <a class="btn btn-success" href="/add_job">Add</a>
+                {% endif %}
                 <h1>Jobs</h1>
             </span>
             <div id="dolny-content">
                 {% for job in userJobs %}
-                <div class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/jobs/{{job.id}}';" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{job.title}}</h5>
                       <p class="card-text">{{job.description}}</p>
@@ -72,7 +69,6 @@
                     {% if job.userId == request.user.id %}
                     <a href="/jobs/edit_job/{{job.id}}" class="btn btn-success">Edit</a>
                     {% endif %}
-                    <a href="/jobs/{{job.id}}" class="btn btn-primary">Read full</a>
                 </div>
                 {% endfor %}
             </div>

@@ -26,8 +26,10 @@
         <h3>Description: {{event.description}}</h3>
         <h5>Start Date: {{event.dateStart}}</h5>
         <h5>End Date: {{event.dateEnd}} <h5>
-        {% for user in event.user.all %}
-        <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user.user.username}}">{{user}}</a></h5>
+        {% for user in users %}
+        {% if user.id == event.userId %}
+        <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
+        {% endif %}
         {% endfor %}
       </div>
     </div>

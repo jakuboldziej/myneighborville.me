@@ -9,48 +9,45 @@
   <div class="d-flex flex-wrap">
     <div id="events">
       <div class="d-flex justify-content-center">
-        <h1 class="text-dark">Newest <a href="/events" class="link-light text-decoration-none">Events</a></h1>
+        <h1 class="text-dark">Newest <a href="/events" class="link-secondary text-decoration-none">Events</a></h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for event in events %}
-                <div class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
                     </div>
-                    <a href="events/{{event.id}}" class="btn btn-primary">Read full</a>
                 </div>
         {% endfor %}
       </div>
     </div>
     <div id="jobs">
       <div class="d-flex justify-content-center">
-        <h1 class="text-dark">Newest <a href="/jobs" class="link-light text-decoration-none">Job</a> Offers</h1>
+        <h1 class="text-dark">Newest <a href="/jobs" class="link-secondary text-decoration-none">Job</a> Offers</h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for job in jobs %}
-                <div class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/jobs/{{job.id}}';" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{job.title}}</h5>
                       <p class="card-text">{{job.description}}</p>
                     </div>
-                    <a href="jobs/{{job.id}}" class="btn btn-primary">Read full</a>
                 </div>
         {% endfor %}
       </div>
     </div>
     <div id="news">
       <div class="d-flex justify-content-center">
-        <h1>Newest <a href="/news" class="link-light text-decoration-none">News</a></h1>
+        <h1>Newest <a href="/news" class="link-secondary text-decoration-none">News</a></h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for newss in news %}
-                <div class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/news/{{newss.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{newss.title}}</h5>
                       <p class="card-text">{{newss.description}}</p>
                     </div>
-                    <a href="news/{{newss.id}}" class="btn btn-primary">Read full</a>
                   </div>
         {% endfor %}
       </div>

@@ -4,12 +4,12 @@
     padding: 10px;   
 }
 #lewy{
-    background-color: black;
-    color: white;
+    color: black;
     width: 50%;
     min-height: 100vh;
     padding: 10px;
-    
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
 }
 #lewy-content{
     display: flex;
@@ -17,11 +17,11 @@
     align-content: flex-start;
 }
 #prawy{
-    background-color: rgb(77, 71, 71);
-    color: white;
+    color: black;
     width: 50%;
     min-height: 100vh;
     padding: 10px;
+    border-bottom: 1px solid black;
 }
 #prawy-content{
     display: flex;
@@ -29,8 +29,7 @@
     align-content: flex-start;
 }
 #dolny{
-    background-color: rgb(100, 64, 64);
-    color: white;
+    color: black;
     width: 100%;
     min-height: 100vh;
     padding: 10px;
@@ -40,15 +39,15 @@
     flex-wrap:wrap;
     align-content: flex-start;
 }
-.event{
+.events, .news, .jobs{
     width: 50%;
     height: 190px;
     overflow: hidden;
     padding: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    transition: transform .3s ease-out;
 }
-.news{
-    width: 50%;
-    height: 190px;
-    overflow: hidden;
-    padding: 5px;
+.events:hover, .news:hover, .jobs:hover{
+  cursor: pointer;
+  transform: translate(5px, -5px);
 }

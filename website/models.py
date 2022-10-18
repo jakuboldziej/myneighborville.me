@@ -9,10 +9,8 @@ class WebsiteUser(models.Model):
     def __str__(self):
         return self.user.username
 
-
-
 class News(models.Model):
-    user = models.ManyToManyField(WebsiteUser)
+    userId = models.IntegerField()
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=10000)
     createdAtDate = models.DateTimeField()
@@ -23,7 +21,7 @@ class News(models.Model):
         return self.title
 
 class Event(models.Model):
-    user = models.ManyToManyField(WebsiteUser)
+    userId = models.IntegerField()
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=10000)
     dateStart = models.DateTimeField()
@@ -46,18 +44,17 @@ class Job(models.Model):
         return self.title
 
 class Marker(models.Model):
-    #do usunięcia users
-    users = models.ManyToManyField(WebsiteUser)
     latitude = models.CharField(max_length=100)
     longitude = models.CharField(max_length=100)
     title = models.CharField(max_length=100, unique=True)
     content = models.TextField(max_length=10000)
     type = models.CharField(max_length=100)
-    # do usunięcia typeId
-    typeId = models.IntegerField(blank=True, null=True)
     news = models.ManyToManyField(News)
     jobs = models.ManyToManyField(Job)
     events = models.ManyToManyField(Event)
 
     def __str__(self):
         return self.title
+
+    def elements(self):
+        return self.news.count() + self.jobs.count() + self.events.count()

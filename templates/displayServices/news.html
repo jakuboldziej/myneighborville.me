@@ -24,8 +24,10 @@
           <div class="card-body">
             <h2>Title: {{n.title}}</h2>
             <h3>Description: {{n.description}}</h3>
-            {% for user in n.user.all %}
-            <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user.user.username}}">{{user}}</a></h5>
+            {% for user in users %}
+            {% if user.id == n.userId %}
+            <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
+            {% endif %}
             {% endfor %}
           </div>
         </div>

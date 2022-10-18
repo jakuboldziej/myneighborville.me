@@ -8,18 +8,18 @@ class WebsiteUserAdmin(admin.ModelAdmin):
 admin.site.register(WebsiteUser, WebsiteUserAdmin)
 
 class NewsAdmin(admin.ModelAdmin):
-    fields = ('user', 'title', 'description', 'location', 'createdAtDate', 'markerId')
-    list_display = ['title', 'id', 'description', 'location', 'createdAtDate', 'markerId']
+    fields = ('userId', 'title','description', 'location', 'createdAtDate', 'markerId')
+    list_display = ['title', 'id', 'userId', 'description', 'location', 'createdAtDate', 'markerId']
 admin.site.register(News, NewsAdmin)
 
 class EventAdmin(admin.ModelAdmin):
-    fields = ('user', 'title', 'description', 'location', 'dateStart', 'dateEnd', 'markerId')
-    list_display = ['title', 'id', 'description', 'location', 'dateStart', 'dateEnd', 'markerId']
+    fields = ('userId', 'title', 'description', 'location', 'dateStart', 'dateEnd', 'markerId')
+    list_display = ['title', 'id', 'userId', 'description', 'location', 'dateStart', 'dateEnd', 'markerId']
 admin.site.register(Event, EventAdmin)
 
 class MarkerAdmin(admin.ModelAdmin):
-    fields = ('title', 'type', 'typeId', 'latitude', 'longitude', 'content', 'news', 'jobs', 'events')
-    list_display = ['title', 'id', 'type', 'typeId', 'latitude', 'longitude', 'content']
+    fields = ('title', 'type', 'latitude', 'longitude', 'content', 'news', 'jobs', 'events')
+    list_display = ['title', 'id', 'type','latitude', 'longitude', 'content', 'elements']
 admin.site.register(Marker, MarkerAdmin)
 
 class JobAdmin(admin.ModelAdmin):

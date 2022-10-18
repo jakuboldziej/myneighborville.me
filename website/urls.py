@@ -6,7 +6,6 @@ urlpatterns = [
     # Views
     path('', views.index, name='index'),
     path('map/', views.map, name='map'),
-    path('add_marker/', views.addMarker, name='addMarker'),
     
     path('profile/settings/<str:nick>', views.profileSettings, name='profileSettings'),
     path('profile/<str:nick>', views.profile, name='profile'),
