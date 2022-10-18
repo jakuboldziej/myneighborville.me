@@ -25,7 +25,7 @@
                       <p class="card-text">{{event.description}}</p>
                     </div>
                     {% if request.user.id == event.userId %}
-                    <a href="/news/edit_event/{{event.id}}" class="btn btn-success">Edit</a>
+                    <a href="/events/edit_event/{{event.id}}" class="btn btn-success">Edit</a>
                     {% endif %}
                 </div>
                 {% endfor %}

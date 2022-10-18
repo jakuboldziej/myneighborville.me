@@ -81,6 +81,7 @@
               title: address,
           });
           document.getElementById('submit').disabled = false;
+          document.getElementById('address').readOnly = true;
           document.getElementById('button-addon').disabled = true;
         } else {
           alert('Geocode was not successful for the following reason: ' + status);

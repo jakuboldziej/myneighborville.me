@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('map/', views.map, name='map'),
     
+    # Profile 
     path('profile/settings/<str:nick>', views.profileSettings, name='profileSettings'),
     path('profile/<str:nick>', views.profile, name='profile'),
 

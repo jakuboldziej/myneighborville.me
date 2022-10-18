@@ -1,19 +1,16 @@
 #events{
     width: 50%;
-    height: 600px;
-    overflow: scroll;
-    overflow-x: hidden;
+    min-height: 80vh;
     border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-#jobs{
-    width: 50%;
-    height: 600px;
-    overflow: scroll;
-    overflow-x: hidden;
-    border-bottom: 1px solid black;
+    border-right    : 1px solid black;
 }
 #news{
+    width: 50%;
+    min-height: 80vh;
+
+    border-bottom: 1px solid black;
+}
+#jobs{
     width: 100%;
     height: 600px;
 }
@@ -32,4 +29,17 @@
 .events:hover, .news:hover, .jobs:hover{
   cursor: pointer;
   transform: translate(5px, -5px);
+}
+.badge{
+    top: 15px;
+    left: 100%;
+}
+.badge-text{
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    font-size: 65%;
+}
+.news-badge, .event-badge{
+    left:115%;
 }

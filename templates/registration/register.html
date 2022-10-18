@@ -73,9 +73,6 @@
         <h5>Locations are necessary for displaying your local events, news and job offers.</h5>
         <h5>For your personal privacy locations are not available for public access.</h5>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
     </div>
   </div>
 </div>
@@ -103,6 +100,7 @@
             title: address,
           });
           document.getElementById('register').disabled = false;
+          document.getElementById('address').readOnly = true;
           document.getElementById('button-addon').disabled = true;
         } else {
           alert('Geocode was not successful for the following reason: ' + status);
