@@ -9,7 +9,7 @@
 {% block main %}
 <form method="POST">
   {% csrf_token %}
-  <div class="position-absolute start-50 top-50 translate-middle d-flex flex-column gap-2">
+  <div class="position-absolute start-50 top-50 translate-middle d-flex flex-column align-items-center justify-content-center gap-2">
     <input id="filter1" class="btn btn-success" value="Show only your city markers">
     <input id="filter2" class="btn btn-success" value="Show all markers">
   </div>
@@ -44,10 +44,6 @@
       {% for marker in allMarkers %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
       {% endfor %}
-
-      const dupa = `<a>asdfasdffasd</a>
-      asdfasdf`
-
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: {{userLocation}} // zmienić na dynamiczne,

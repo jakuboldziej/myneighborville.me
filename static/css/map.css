@@ -4,5 +4,25 @@
   display: none;
 }
 #filter1, #filter2{
-  width: 15vw;
+  width: 110%;
+}
+@media only screen and (max-width: 600px) {
+  #filter1{
+    width: 120%;
+  }
+}
+.object_title{
+  text-decoration: none;
+}
+.object_link{
+  text-decoration: none;
+  color: black;
+  font-size: 200%;
+  text-align: center;
+}
+.gm-style-iw-d{
+  max-width: 25vw;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  text-align: center;
 }

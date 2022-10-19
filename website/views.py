@@ -179,27 +179,29 @@ def addEvent(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
+        address = address.replace(" ", "_").replace(',', '')
         try:
-            address = address.replace(" ", "_").replace(',', '')
             checkMarker = Marker.objects.get(title=address)
         except:
             checkMarker = None
         if checkMarker:
             if checkMarker.elements() > 1:
-                checkMarker.content += '<a href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
             else:
                 checkMarker.content = ''
                 object = None
+                objectType = None
                 if checkMarker.jobs.count() != 0:
                     object = checkMarker.jobs.first()
-                    checkMarker.content += '<a href="/jobs/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "jobs"
                 elif checkMarker.events.count() != 0:
                     object = checkMarker.events.first()
-                    checkMarker.content += '<a href="/events/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "events"
                 elif checkMarker.news.count() != 0:
                     object = checkMarker.news.first()
-                    checkMarker.content += '<a href="/news/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                checkMarker.content += '<a href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
+                    objectType = "news"
+                checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
 
                 checkMarker.events.add(newEvent)
                 checkMarker.save()
@@ -214,8 +216,8 @@ def addEvent(request):
                 title=address,
                 content=f"""
                 <div class="text-center">
-                <a href='/events/{newEvent.id}'><h3>{newEvent.title}</h3></a></br>
-                <h2>{newEvent.description}</h2>
+                <a class="object_title" href='/events/{newEvent.id}'><h2>{newEvent.title}</h2></a></br>
+                <h3 class="object_description">{newEvent.description}</h3>
                 </div>
                 """,
                 type="Event",
@@ -264,27 +266,29 @@ def addNews(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
+        address = address.replace(" ", "_").replace(',', '')
         try:
-            address = address.replace(" ", "_").replace(',', '')
             checkMarker = Marker.objects.get(title=address)
         except:
             checkMarker = None
         if checkMarker:
             if checkMarker.elements() > 1:
-                checkMarker.content += '<a href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
             else:
                 checkMarker.content = ''
                 object = None
+                objectType = None
                 if checkMarker.jobs.count() != 0:
                     object = checkMarker.jobs.first()
-                    checkMarker.content += '<a href="/jobs/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "jobs"
                 elif checkMarker.events.count() != 0:
                     object = checkMarker.events.first()
-                    checkMarker.content += '<a href="/events/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "events"
                 elif checkMarker.news.count() != 0:
                     object = checkMarker.news.first()
-                    checkMarker.content += '<a href="/news/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                checkMarker.content += '<a href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
+                    objectType = "news"
+                checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
 
             checkMarker.news.add(newNews)
             checkMarker.save()
@@ -299,8 +303,8 @@ def addNews(request):
                 title=address,
                 content=f"""
                 <div class="text-center">
-                <a href='/news/{newNews.id}'><h3>{newNews.title}</h3></a></br>
-                <h2>{newNews.description}</h2>
+                <a class="object_title" href='/news/{newNews.id}'><h2>{newNews.title}</h2></a></br>
+                <h3 class="object_description" >{newNews.description}</h3>
                 </div>
                 """,
                 type="News",
@@ -348,27 +352,29 @@ def addJob(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
+        address = address.replace(" ", "_").replace(',', '')
         try:
-            address = address.replace(" ", "_").replace(',', '')
             checkMarker = Marker.objects.get(title=address)
         except:
             checkMarker = None
         if checkMarker:
             if checkMarker.elements() > 1:
-                checkMarker.content += '<a href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
             else:
                 checkMarker.content = ''
                 object = None
+                objectType = None
                 if checkMarker.jobs.count() != 0:
                     object = checkMarker.jobs.first()
-                    checkMarker.content += '<a href="/jobs/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "jobs"
                 elif checkMarker.events.count() != 0:
                     object = checkMarker.events.first()
-                    checkMarker.content += '<a href="/events/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                    objectType = "events"
                 elif checkMarker.news.count() != 0:
                     object = checkMarker.news.first()
-                    checkMarker.content += '<a href="/news/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                checkMarker.content += '<a href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
+                    objectType = "news"
+                checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
+                checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
 
             checkMarker.jobs.add(newJob)
             checkMarker.save()
@@ -383,8 +389,8 @@ def addJob(request):
                 title=address,
                 content=f"""
                 <div class="text-center">
-                <a href='/jobs/{newJob.id}'><h3>{newJob.title}</h3></a></br>
-                <h2>{newJob.description}</h2>
+                <a class="object_title" href='/jobs/{newJob.id}'><h2>{newJob.title}</h2></a></br>
+                <h3 class="object_description">{newJob.description}</h3>
                 </div>
                 """,
                 type="Job",
@@ -502,30 +508,22 @@ def deleteEvent(request, id):
         if markerElements == 1:
             result = ''
             object = None
+            objectType = None
             if marker.jobs.count() == 1:
                 object = marker.jobs.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/jobs/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "jobs"
             elif marker.events.count() == 1:
                 object = marker.events.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/events/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "events"
             elif marker.news.count() == 1:
                 object = marker.news.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/news/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "news"
+            result = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
+                <h3 class="object_description">{object.description}</h3>
+                </div>
+                """
         else:
             for i, linia in enumerate(linie):
                 if i == len(linie) - 1:
@@ -564,30 +562,23 @@ def deleteJob(request, id):
         if markerElements == 1:
             result = ''
             object = None
+            objectType = None
             if marker.jobs.count() == 1:
                 object = marker.jobs.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/jobs/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "jobs"
             elif marker.events.count() == 1:
                 object = marker.events.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/events/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "events"
+
             elif marker.news.count() == 1:
                 object = marker.news.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/news/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "news"
+            result = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
+                <h3 class="object_description">{object.description}</h3>
+                </div>
+                """
         else:
             for i, linia in enumerate(linie):
                 if i == len(linie) - 1:
@@ -624,30 +615,22 @@ def deleteNews(request, id):
         if markerElements == 1:
             result = ''
             object = None
+            objectType = None
             if marker.jobs.count() == 1:
                 object = marker.jobs.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/jobs/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "jobs"
             elif marker.events.count() == 1:
                 object = marker.events.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/events/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "events"
             elif marker.news.count() == 1:
                 object = marker.news.first()
-                result = f"""
-                    <div class="text-center">
-                    <a href='/news/{object.id}'><h3>{object.title}</h3></a></br>
-                    <h2>{object.description}</h2>
-                    </div>
-                    """
+                objectType = "news"
+            result = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
+                <h3 class="object_description">{object.description}</h3>
+                </div>
+                """
         else:
             for i, linia in enumerate(linie):
                 if i == len(linie) - 1:
