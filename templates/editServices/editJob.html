@@ -11,16 +11,28 @@
 <form method="POST">
 {% csrf_token %}
 <div class="d-flex p-2 justify-content-center align-items-center flex-column gap-2">
-        <div class="jobs card text-center text-bg-secondary m-2" style="width: 100%;">
+        <div class="card text-center text-bg-secondary m-2" style="width: 100%;">
             <div class="card-body d-flex justify-content-center align-items-center flex-column gap-2">
                 <h3>Title: <input class="form-control" type="text" name="title" value="{{job.title}}"></h3>
-                <h3>Description: <input class="form-control" type="text" name="description" value="{{job.description}}"></h3>
-                <h3>Users</h3>
-                {% for user in job.people.all %}
-                <ul class="list-group">
-                    <li class="list-group-item">{{user.user.username}}</li><a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
-                  </ul>
-                {% endfor %}
+                <h3>Description: <textarea class="form-control" type="text" name="description" style="width: 300px;">{{job.description}}</textarea></h3>
+                <div class="accordion" id="accordionExample" style="width: 200px;">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          Users
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body d-flex flex-column gap-2">
+                            {% for user in job.people.all %}
+                            <ul class="list-group">
+                                <li class="list-group-item">{{user.user.username}}</li><a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
+                            </ul>
+                            {% endfor %}
+                        </div>
+                      </div>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="/delete_job/{{job.id}}" type="button" class="btn btn-danger">Delete</a>

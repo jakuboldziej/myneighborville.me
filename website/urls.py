@@ -6,6 +6,7 @@ urlpatterns = [
     # Views
     path('', views.index, name='index'),
     path('map/', views.map, name='map'),
+    path('home_list/', views.home_list, name='home_list'),
     
     # Profile 
     path('profile/settings/<str:nick>', views.profileSettings, name='profileSettings'),

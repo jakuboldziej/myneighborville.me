@@ -13,7 +13,7 @@ class NewsAdmin(admin.ModelAdmin):
 admin.site.register(News, NewsAdmin)
 
 class EventAdmin(admin.ModelAdmin):
-    fields = ('userId', 'title', 'description', 'location', 'dateStart', 'dateEnd', 'markerId')
+    fields = ('userId', 'title', 'description', 'location', 'dateStart', 'dateEnd', 'markerId', 'participants')
     list_display = ['title', 'id', 'userId', 'description', 'location', 'dateStart', 'dateEnd', 'markerId']
 admin.site.register(Event, EventAdmin)
 

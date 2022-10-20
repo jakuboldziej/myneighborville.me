@@ -20,7 +20,7 @@
     let map;
     let markers = [];
     class Marker {
-      constructor(location, title, content) {
+      constructor(location, title, content, img) {
         const infowindow = new google.maps.InfoWindow({
           content: content,
         });
@@ -28,6 +28,7 @@
           position: location,
           map: map,
           title: title,
+          icon: "{% static  'images/Praca_30x40.png' %}"
         });
         marker.addListener("click", () => {
           infowindow.open({
@@ -57,14 +58,14 @@
       const filter1 = document.getElementById('filter1')
       const filter2 = document.getElementById('filter2')
       function loadAllMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", "{{userHomeMarker.content|safe}}");
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`);
         {% for marker in allMarkers %}
         const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
         {% endfor %}
         document.getElementById('map').style.display = 'block';
       }
       function loadCityMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", "{{userHomeMarker.content|safe}}");
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`);
         {% for marker in cityMarkers %}
         const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
         {% endfor %}
@@ -78,4 +79,5 @@
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initialize"
     async defer></script>
+    
 {% endblock %}

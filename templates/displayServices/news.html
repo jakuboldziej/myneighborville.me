@@ -4,6 +4,8 @@
 {% block head %}
 <style>
   .news{
+    max-height: 280px;
+    overflow: hidden;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
     transition: transform .3s ease-out;
   }
@@ -11,10 +13,28 @@
     cursor: pointer;
     transform: translate(5px, -5px);
   }
+  .createdby{
+    position: absolute;
+    top: 0px;
+    left: 2px;
+    opacity: 0.5;
+    color: black;
+  }
   </style>
 {% endblock %}
 
 {% block main %}
+<div class="filters p-3 position-absolute">
+  <form method="POST">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+      <span class="input-group-text">Filters</span>
+      <input type="submit" id="all" class="btn {% if filter == 'all' %}btn-success{% elif filter == 'city' %}btn-danger{% else %}btn-success{% endif %}" {% if filter == 'all' %}disabled{% else %}{% endif %} value="All">
+      <input type="submit" id="city" class="btn {% if filter == 'city' %}btn-success{% elif filter == 'all' %}btn-danger{% else %}btn-success{% endif %}" {% if filter == 'city' %}disabled{% else %}{% endif %} value="City">
+    </div>
+    <input id="result" name="result" class="d-none">
+  </form>
+</div>
 <span style="display: flex; align-items: center; justify-content: center;">
     <h1>News</h1>
 </span>
@@ -22,11 +42,11 @@
     {% for n in news %}
         <div onclick="location.href='/news/{{n.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 27.5rem;">
           <div class="card-body">
-            <h2>Title: {{n.title}}</h2>
-            <h3>Description: {{n.description}}</h3>
+            <h1>{{n.title}}</h1>
+            <h3>{{n.description}}</h3>
             {% for user in users %}
             {% if user.id == n.userId %}
-            <h5>Created by: <a class="link-primary text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
+            <h5 class="createdby">Created by: <a class="link-dark text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
             {% endif %}
             {% endfor %}
           </div>
@@ -35,4 +55,18 @@
   </div>
   <button id="back-to-top" onclick="topFunction()" class="btn btn-dark btn-lg back-to-top" role="button"><i class="fas fa-chevron-up"></i></button>
   <script src="{% static 'js/scroll-top.js' %}"></script>
+  <script>
+    const city = document.getElementById("city");
+    const all = document.getElementById("all");
+    let result = document.getElementById("result");
+
+    city.addEventListener('click', cityFun);
+    all.addEventListener('click', allFun);
+    function cityFun(){
+      result.value = "city";
+    }
+    function allFun(){
+      result.value = "all";
+    }
+  </script>
 {% endblock %}

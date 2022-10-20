@@ -10,20 +10,18 @@
       <div class="d-flex justify-content-center">
         <h1 class="text-dark">Recent 
           <a href="/events" class="link-secondary text-decoration-none position-relative">Events
-            <span class="event-badge position-absolute translate-middle badge rounded-pill bg-danger w-25 h-50">
-              <h5 class="badge-text" style="margin-left: {% if eventsCount >= 99 %}0.5{% elif eventsCount >= 10 and eventsCount < 99 %}6{%else%}11{% endif %}px;">{% if eventsCount >= 99 %}99+{%else%}{{eventsCount}}{%endif%}</h5>
-            </span>
+            <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if eventsCount > 99 %}99+{%else%}{{eventsCount}}{%endif%}</span>
           </a>
         </h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for event in events %}
-                <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
-                    <div class="card-body">
-                      <h5 class="card-title">{{event.title}}</h5>
-                      <p class="card-text">{{event.description}}</p>
-                    </div>
-                </div>
+          <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">{{event.title}}</h5>
+                <p class="card-text">{{event.description}}</p>
+              </div>
+          </div>
         {% endfor %}
       </div>
     </div>
@@ -31,31 +29,27 @@
       <div class="d-flex justify-content-center">
         <h1>Recent 
           <a href="/news" class="link-secondary text-decoration-none position-relative">News
-          <span class="news-badge position-absolute translate-middle badge rounded-pill bg-danger w-25 h-50">
-            <h5 class="badge-text" style="margin-left: {% if newsCount >= 99 %}0.5{% elif newsCount >= 10 and newsCount < 99 %}6{%else%}11{% endif %}px;">{% if newsCount >= 99 %}99+{%else%}{{newsCount}}{%endif%}</h5>
-          </span>
+            <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if newsCount > 99 %}99+{%else%}{{newsCount}}{%endif%}</span>
           </a>
         </h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for newss in news %}
-                <div onclick="location.href='/news/{{newss.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
-                    <div class="card-body">
-                      <h5 class="card-title">{{newss.title}}</h5>
-                      <p class="card-text">{{newss.description}}</p>
-                    </div>
-                  </div>
+          <div onclick="location.href='/news/{{newss.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">{{newss.title}}</h5>
+                <p class="card-text">{{newss.description}}</p>
+              </div>
+          </div>
         {% endfor %}
       </div>
     </div>
     <div id="jobs">
       <div class="d-flex justify-content-center">
         <h1 class="text-dark">Recent 
-          <a href="/jobs" class="link-secondary text-decoration-none position-relative">Job
-          <span class="job-badge position-absolute translate-middle badge rounded-pill bg-danger w-50 h-50">
-            <h5 class="badge-text" style="margin-left: {% if jobsCount >= 99 %}0.5{% elif jobsCount >= 10 and jobsCount < 99 %}6{%else%}11{% endif %}px;">{% if jobsCount >= 99 %}99+{%else%}{{jobsCount}}{%endif%}</h5>
-          </span>
-          </a>
+            <a href="/jobs" class="link-secondary text-decoration-none position-relative">Job
+              <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if jobsCount > 99 %}99+{%else%}{{jobsCount}}{%endif%}</span>
+            </a>
           Offers</h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">

@@ -11,10 +11,8 @@
 <div class="d-flex p-2 justify-content-center">
       <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
-          <h3>Description: {{oneNews.description}}</h3>
-          {% for user in oneNews.user.all %}
-          <h5>Created by: {{user}}</h5>
-          {% endfor %}
+          <h3>{{oneNews.description}}</h3>
+          <h5>Created by: {{owner}}</h5>
         </div>
       </div>
 </div>

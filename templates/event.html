@@ -11,10 +11,10 @@
 <div class="d-flex p-2 justify-content-center">
       <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
-          <h3>Description: {{event.description}}</h3>
-          {% for user in event.user.all %}
-            <h5>Created by: {{user}}</h5>
-            {% endfor %}
+          <h3>{{event.description}}</h3>
+          <h3>Start Date: {{event.dateStart}}</h3>
+          <h3>Start Date: {{event.dateEnd}}</h3>
+          <h5>Created by: {{owner}}</h5>
         </div>
       </div>
 </div>

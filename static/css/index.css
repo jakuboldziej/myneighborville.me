@@ -31,15 +31,7 @@
   transform: translate(5px, -5px);
 }
 .badge{
-    top: 18px;
-    left: 100%;
-}
-.badge-text{
-    position: absolute;
-    left: 3px;
-    top: 0px;
-    font-size: 65%;
-}
-.news-badge, .event-badge{
-    left:115%;
+    z-index: 99999;
+    font-size: 40%;
+    top: 1vh;
 }

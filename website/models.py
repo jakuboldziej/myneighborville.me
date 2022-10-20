@@ -28,6 +28,7 @@ class Event(models.Model):
     dateEnd= models.DateTimeField()
     location = models.CharField(max_length=100)
     markerId = models.IntegerField(null=True, blank=True)
+    participants = models.ManyToManyField(WebsiteUser)
 
     def __str__(self):
         return self.title
@@ -49,9 +50,9 @@ class Marker(models.Model):
     title = models.CharField(max_length=100, unique=True)
     content = models.TextField(max_length=10000)
     type = models.CharField(max_length=100)
-    news = models.ManyToManyField(News)
-    jobs = models.ManyToManyField(Job)
-    events = models.ManyToManyField(Event)
+    news = models.ManyToManyField(News, blank=True)
+    jobs = models.ManyToManyField(Job, blank=True)
+    events = models.ManyToManyField(Event, blank=True)
 
     def __str__(self):
         return self.title
