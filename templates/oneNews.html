@@ -2,6 +2,22 @@
 {% load static %}
 {% block title %}{{oneNews.title}}{% endblock %}
 {% block head %}
+<style>
+  .location{
+    position: absolute;
+    bottom: -5px;
+    right: 4px;
+    opacity: 0.5;
+    color: black;
+  }
+  .createdAt{
+    position: absolute;
+    bottom: -5px;
+    left: 4px;
+    opacity: 0.5;
+    color: black;
+  }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -9,10 +25,12 @@
     <h1>{{oneNews.title}}</h1>
 </span>
 <div class="d-flex p-2 justify-content-center">
-      <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
+      <div class="news card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
-          <h3>{{oneNews.description}}</h3>
-          <h5>Created by: {{owner}}</h5>
+          <h3 class="border-bottom">{{oneNews.description}}</h3>
+          <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
+          <h5 class="location">Location: {{oneNews.location}}</h5>
+          <h5 class="createdAt">Created at: {{oneNews.createdAtDate}}</h5>
         </div>
       </div>
 </div>

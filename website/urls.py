@@ -18,7 +18,10 @@ urlpatterns = [
     path('events/edit_event/<int:id>', views.editEvent, name='editEvent'),
     path('add_event/', views.addEvent, name='addEvent'),
     path('delete_event/<int:id>', views.deleteEvent, name='deleteEvent'),
-
+    path('delete_user_from_event/<int:eventId>/<int:userId>', views.deleteUserFromEvent, name='deleteUserFromEvent'),
+    path('participate/<int:eventId>', views.participate, name="participate"),
+    path('unparticipate/<int:eventId>', views.unparticipate, name="unparticipate"),
+    
     # Jobs
     path('jobs/', views.jobs, name='jobs'),
     path('jobs/<int:id>', views.job, name='job'),
@@ -26,6 +29,8 @@ urlpatterns = [
     path('add_job/', views.addJob, name='addJob'),
     path('delete_job/<int:id>', views.deleteJob, name='deleteJob'),
     path('delete_user_from_job/<int:jobId>/<int:userId>', views.deleteUserFromJob, name='deleteUserFromJob'),
+    path('apply/<int:jobId>', views.apply, name="apply"),
+    path('unapply/<int:jobId>', views.unapply, name="unapply"),
 
     # News  
     path('news/', views.news, name='news'),

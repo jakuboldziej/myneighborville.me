@@ -2,6 +2,22 @@
 {% load static %}
 {% block title %}{{job.title}}{% endblock %}
 {% block head %}
+<style>
+  .apply_count{
+    position: absolute;
+    bottom: -5px;
+    left: 2px;
+    opacity: 0.5;
+    color: black;
+  }
+  .location{
+    position: absolute;
+    bottom: -5px;
+    right: 4px;
+    opacity: 0.5;
+    color: black;
+  }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -9,10 +25,21 @@
     <h1>{{job.title}}</h1>
 </span>
 <div class="d-flex p-2 justify-content-center">
-      <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
+      <div class="job card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
-          <h3>{{job.description}}</h3>
-          <h5>Created by: {{owner}}</h5>
+          <h3 class="border-bottom">{{job.description}}</h3>
+          <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
+          <h5 class="apply_count">
+            <a class="text-decoration-none" href="/{% if applied %}unapply{% else %}apply{% endif %}/{{job.id}}">
+              {% if applied %}
+              <img src="{% static 'images/applied.png' %}">
+              {% else %}
+              <img src="{% static 'images/apply.png' %}">
+              {% endif %}
+            </a>
+            {{job.people.count}}
+          </h5>
+          <h5 class="location">Location: {{job.location}}</h5>
         </div>
       </div>
 </div>

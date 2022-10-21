@@ -33,19 +33,19 @@
   <form method="POST" class="form-group">
       {% csrf_token %}
       {{form}}
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" name="title" class="form-control" placeholder="Title..." maxlength='100' required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" placeholder="Description..." maxlength='2000' required></textarea>
+      </div>
       <label class="form-label">Location</label>
       <div class="input-group mb-3">
         <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
         <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
         <input id="location" name="location" class="d-none">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Title</label>
-        <input type="text" name="title" class="form-control" placeholder="Title..." required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Description</label>
-        <textarea name="description" class="form-control" placeholder="Description..." required></textarea>
       </div>
       <button id="submit" type="submit" class="btn btn-success" disabled>Add</button>
     </form>

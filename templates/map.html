@@ -20,7 +20,7 @@
     let map;
     let markers = [];
     class Marker {
-      constructor(location, title, content, img) {
+      constructor(location, title, content, icon) {
         const infowindow = new google.maps.InfoWindow({
           content: content,
         });
@@ -28,7 +28,7 @@
           position: location,
           map: map,
           title: title,
-          icon: "{% static  'images/Praca_30x40.png' %}"
+          // icon: icon
         });
         marker.addListener("click", () => {
           infowindow.open({
@@ -58,16 +58,16 @@
       const filter1 = document.getElementById('filter1')
       const filter2 = document.getElementById('filter2')
       function loadAllMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`);
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`, "{{userHomeMarker.icon|safe}}");
         {% for marker in allMarkers %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
         {% endfor %}
         document.getElementById('map').style.display = 'block';
       }
       function loadCityMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`);
+        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`, "{{userHomeMarker.icon|safe}}");
         {% for marker in cityMarkers %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`);
+        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
         {% endfor %}
         filter1.style.display = 'none';        
         filter2.style.display = 'none';        

@@ -4,7 +4,7 @@
 {% block head %}
 <style>
   .news{
-    max-height: 280px;
+    max-height: 300px;
     overflow: hidden;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
     transition: transform .3s ease-out;
@@ -15,10 +15,14 @@
   }
   .createdby{
     position: absolute;
-    top: 0px;
-    left: 2px;
+    bottom: -5px;
+    right: 2px;
     opacity: 0.5;
     color: black;
+  }
+  .description{
+    height: 200px;
+    overflow: hidden;
   }
   </style>
 {% endblock %}
@@ -43,7 +47,7 @@
         <div onclick="location.href='/news/{{n.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 27.5rem;">
           <div class="card-body">
             <h1>{{n.title}}</h1>
-            <h3>{{n.description}}</h3>
+            <h3 class="description">{{n.description}}</h3>
             {% for user in users %}
             {% if user.id == n.userId %}
             <h5 class="createdby">Created by: <a class="link-dark text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>

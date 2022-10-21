@@ -3,6 +3,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
 
@@ -57,13 +58,13 @@ def map(request):
     }
     return render(request, 'map.html', context)
 
+@login_required
 def home_list(request):
     user = WebsiteUser.objects.get(id=request.user.id)
     marker = Marker.objects.get(title=user.location)
-    jobs = marker.jobs
-    events = marker.events
-    news = marker.news
-    print(jobs.all(), events.all(), news.all())
+    jobs = marker.jobs.all()
+    events = marker.events.all()
+    news = marker.news.all()
 
     context = {
         'jobs': jobs,
@@ -193,16 +194,30 @@ def jobs(request):
 # Views with params
 @login_required
 def profileSettings(request, nick):
-    owner = User.objects.get(username=nick)
-    owner = WebsiteUser.objects.get(user=owner)
+    if request.method == "POST":
+        username = request.POST["username"]
+        location = request.POST["location"]
+        
+        user = User.objects.get(username=nick)
+        websiteUser = WebsiteUser.objects.get(user=user)
 
-    context = {
-        'currentUser': owner,
-    }
-    if owner.user == request.user:
-        return render(request, 'settings.html', context)
+        user.username = username
+        websiteUser.location = location
+        user.save()
+        websiteUser.save()
+
+        return redirect('/profile/settings/' + user.username)
     else:
-        return redirect('/')
+        owner = User.objects.get(username=nick)
+        owner = WebsiteUser.objects.get(user=owner)
+
+        context = {
+            'currentUser': owner,
+        }
+        if owner.user == request.user:
+            return render(request, 'settings.html', context)
+        else:
+            return redirect('/')
         
 @login_required
 def profile(request, nick):
@@ -233,23 +248,79 @@ def oneNews(request, id):
 
 @login_required
 def event(request, id):
+    user = WebsiteUser.objects.get(id=request.user.id)
     event = Event.objects.get(id=id)
     owner = WebsiteUser.objects.get(id=event.userId)
+
+    if user in event.participants.all():
+        participating = True
+    else:
+        participating = False
+        
     context = {
         'event': event,
         'owner': owner,
+        'participating': participating,
     }
     return render(request, 'event.html', context)
 
 @login_required
+def participate(request, eventId):
+    user = WebsiteUser.objects.get(id=request.user.id)
+    event = Event.objects.get(id=eventId)
+    
+    event.participants.add(user)
+    event.save()
+
+    return redirect('/events/' + str(eventId))
+
+@login_required
+def unparticipate(request, eventId):
+    user = WebsiteUser.objects.get(id=request.user.id)
+    event = Event.objects.get(id=eventId)
+    
+    event.participants.remove(user)
+    event.save()
+
+    return redirect('/events/' + str(eventId))
+
+@login_required
 def job(request, id):
+    user = WebsiteUser.objects.get(id=request.user.id)
     job = Job.objects.get(id=id)
     owner = WebsiteUser.objects.get(id=job.userId)
+
+    if user in job.people.all():
+        applied = True
+    else:
+        applied = False
+
     context = {
         'job': job,
         'owner': owner,
+        'applied': applied,
     }
     return render(request, 'job.html', context)
+
+@login_required
+def apply(request, jobId):
+    user = WebsiteUser.objects.get(id=request.user.id)
+    job = Job.objects.get(id=jobId)
+    
+    job.people.add(user)
+    job.save()
+
+    return redirect('/jobs/' + str(jobId))
+
+@login_required
+def unapply(request, jobId):
+    user = WebsiteUser.objects.get(id=request.user.id)
+    job = Job.objects.get(id=jobId)
+    
+    job.people.remove(user)
+    job.save()
+
+    return redirect('/jobs/' + str(jobId))
 
 @login_required
 def addEvent(request):
@@ -262,10 +333,10 @@ def addEvent(request):
         location = request.POST['location']
         dateStart = request.POST['dateStart']
         dateStart = dateStart.split("T")
-        dateStart = dateStart[0] + ' ' + dateStart[1] + '+02:00'
+        dateStart = dateStart[0] + ' ' + dateStart[1]
         dateEnd = request.POST['dateEnd']
         dateEnd = dateEnd.split("T")
-        dateEnd = dateEnd[0] + ' ' + dateEnd[1] + '+02:00'
+        dateEnd = dateEnd[0] + ' ' + dateEnd[1]
 
         newEvent = Event.objects.create(
             userId=currentWebsiteUser.id,
@@ -274,7 +345,7 @@ def addEvent(request):
             dateStart=dateStart,
             dateEnd=dateEnd,
             location=address,
-            )
+        )
         newEvent.save()
         currentWebsiteUser = request.session["currentWebsiteUser"]
 
@@ -282,8 +353,8 @@ def addEvent(request):
         locSplit = location.split(", ")
         lat = locSplit[0]
         lng = locSplit[1]
+        address = address.replace(" ", "_").replace(',', '')
         try:
-            address = address.replace(" ", "_").replace(',', '')
             checkMarker = Marker.objects.get(title=address)
         except:
             checkMarker = None
@@ -313,12 +384,12 @@ def addEvent(request):
                 else:
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
+                    checkMarker.type = "Multiple"
 
-                checkMarker.events.add(newEvent)
-                checkMarker.save()
-
-                newEvent.markerId = checkMarker.id
-                newEvent.save()
+            checkMarker.events.add(newEvent)
+            checkMarker.save()
+            newEvent.markerId = checkMarker.id
+            newEvent.save()
         else:
             address = address.replace(" ", "_").replace(',', '')
             newMarker = Marker.objects.create(
@@ -336,7 +407,6 @@ def addEvent(request):
             newMarker.events.add(newEvent)
             newMarker.save()
 
-            print(newMarker.id)
             newEvent.markerId = newMarker.id
             newEvent.save()
 
@@ -346,7 +416,6 @@ def addEvent(request):
         markers = Marker.objects.all()
         userLocation = currentWebsiteUser.location
         userLocation = userLocation.replace(" ", "_").replace(",", "")
-
         context = {
             'api_key': api_key,
             'markers': markers,
@@ -409,6 +478,7 @@ def addNews(request):
                 else:
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
+                    checkMarker.type = "Multiple"
 
             checkMarker.news.add(newNews)
             checkMarker.save()
@@ -503,6 +573,7 @@ def addJob(request):
                 else:
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
+                    checkMarker.type = "Multiple"
 
             checkMarker.jobs.add(newJob)
             checkMarker.save()
@@ -522,6 +593,7 @@ def addJob(request):
                 </div>
                 """,
                 type="Job",
+                icon="/static/images/Praca_30x40.png",
             )
             newMarker.jobs.add(newJob)
             newMarker.save()
@@ -546,16 +618,16 @@ def addJob(request):
 @login_required
 def editEvent(request, id):
     event = Event.objects.get(id=id)
+    marker = Marker.objects.get(id=event.markerId)
     if request.method == "POST":
         title = request.POST['title']
         description = request.POST['description']
         dateStart = request.POST['dateStart']
-        dateEnd = request.POST['dateEnd']
-        
         dateStart = dateStart.split("T")
-        dateStart = dateStart[0] + ' ' + dateStart[1] + '+02:00'
+        dateStart = dateStart[0] + ' ' + dateStart[1]
+        dateEnd = request.POST['dateEnd']
         dateEnd = dateEnd.split("T")
-        dateEnd = dateEnd[0] + ' ' + dateEnd[1] + '+02:00'
+        dateEnd = dateEnd[0] + ' ' + dateEnd[1]
 
         event.title = title
         event.description = description
@@ -563,9 +635,36 @@ def editEvent(request, id):
         event.dateEnd = dateEnd
         event.save()
 
+        markerType = marker.type
+        result = ''
+        if marker.elements() == 1:
+            if markerType != "Home":
+                result = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/events/{event.id}'><h2>{event.title}</h2></a></br>
+                    <h3 class="object_description">{event.description}</h3>
+                    </div>
+                    """
+        else:
+            if markerType != "Home":
+                newsLinia = '/events/' + str(event.id)
+                linie = marker.content.split("</br>")
+                for i, linia in enumerate(linie):
+                    if newsLinia in linia:
+                        linie[i] = '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n'
+
+                for i, linia in enumerate(linie):
+                    if i == len(linie) - 1:
+                        result += linia
+                    else:
+                        result += linia + '</br>'
+
+        marker.content = result
+        marker.save()
         return redirect('/profile/' + request.user.username)
     else:
         # dodać do start i end time +02:00
+        print(event.dateStart.timetz())
         context = {
             'event': event,
         }
@@ -577,6 +676,7 @@ def editEvent(request, id):
 @login_required
 def editJob(request, id):
     job = Job.objects.get(id=id)
+    marker = Marker.objects.get(id=job.markerId)
     if request.method == "POST":
         title = request.POST['title']
         description = request.POST['description']
@@ -584,6 +684,33 @@ def editJob(request, id):
         job.title = title
         job.description = description
         job.save()
+
+        markerType = marker.type
+        result = ''
+        if marker.elements() == 1:
+            if markerType != "Home":
+                result = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/jobs/{job.id}'><h2>{job.title}</h2></a></br>
+                    <h3 class="object_description">{job.description}</h3>
+                    </div>
+                    """
+        else:
+            if markerType != "Home":
+                newsLinia = '/jobs/' + str(job.id)
+                linie = marker.content.split("</br>")
+                for i, linia in enumerate(linie):
+                    if newsLinia in linia:
+                        linie[i] = '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n'
+
+                for i, linia in enumerate(linie):
+                    if i == len(linie) - 1:
+                        result += linia
+                    else:
+                        result += linia + '</br>'
+                        
+        marker.content = result
+        marker.save()
 
         return redirect('/profile/' + request.user.username)
     else:
@@ -598,6 +725,7 @@ def editJob(request, id):
 @login_required
 def editNews(request, id):
     news = News.objects.get(id=id)
+    marker = Marker.objects.get(id=news.markerId)
     if request.method == "POST":
         title = request.POST['title']
         description = request.POST['description']
@@ -605,6 +733,33 @@ def editNews(request, id):
         news.title = title
         news.description = description
         news.save()
+
+        markerType = marker.type
+        result = ''
+        if marker.elements() == 1:
+            if markerType != "Home":
+                result = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/news/{news.id}'><h2>{news.title}</h2></a></br>
+                    <h3 class="object_description">{news.description}</h3>
+                    </div>
+                    """
+        else:
+            if markerType != "Home":
+                newsLinia = '/news/' + str(news.id)
+                linie = marker.content.split("</br>")
+                for i, linia in enumerate(linie):
+                    if newsLinia in linia:
+                        linie[i] = '<a class="object_link" href="/news/' + str(news.id) + '">' + news.title + '</a>\n'
+
+                for i, linia in enumerate(linie):
+                    if i == len(linie) - 1:
+                        result += linia
+                    else:
+                        result += linia + '</br>'
+
+        marker.content = result
+        marker.save()
 
         return redirect('/profile/' + request.user.username)
     else:
@@ -627,7 +782,6 @@ def deleteEvent(request, id):
 
     if event.userId == request.user.id:
         newsLinia = '/events/' + str(event.id)
-        # jeżel linie jest None usuń też markera
         linie = marker.content.split("</br>")
         for i, linia in enumerate(linie):
             if newsLinia in linia:
@@ -636,7 +790,6 @@ def deleteEvent(request, id):
         
         result = ''
         if markerElements == 1:
-            result = ''
             object = None
             objectType = None
             if marker.jobs.count() == 1:
@@ -658,6 +811,7 @@ def deleteEvent(request, id):
                     <h3 class="object_description">{object.description}</h3>
                     </div>
                     """
+                marker.type = objectType.capitalize()
         else:
             if markerType != "Home":
                 for i, linia in enumerate(linie):
@@ -720,6 +874,8 @@ def deleteJob(request, id):
                     <h3 class="object_description">{object.description}</h3>
                     </div>
                     """
+                marker.type = objectType.capitalize()
+                
         else:
             if markerType != "Home":
                 for i, linia in enumerate(linie):
@@ -780,6 +936,7 @@ def deleteNews(request, id):
                     <h3 class="object_description">{object.description}</h3>
                     </div>
                     """
+                marker.type = objectType.capitalize()
         else:
             if markerType != "Home":
                 for i, linia in enumerate(linie):
@@ -789,7 +946,8 @@ def deleteNews(request, id):
                         result += linia + '</br>'
             else:
                 result = "<h2>Home</h2>"
-        if markerElements == 0 and markerType != "markerType":
+        if markerElements == 0 and markerType != "Home":
+            pass
             marker.delete()
         else:
             marker.content = result
@@ -805,8 +963,15 @@ def deleteUserFromJob(request, jobId, userId):
 
     job.people.remove(user)
     job.save()
-    return redirect('/jobs/edit_job/' + jobId)
+    return redirect('/jobs/edit_job/' + str(jobId))
 
+def deleteUserFromEvent(request, eventId, userId):
+    user = WebsiteUser.objects.get(id=userId)
+    event = Event.objects.get(id=eventId)
+
+    event.participants.remove(user)
+    event.save()
+    return redirect('/jobs/edit_job/' + str(eventId))
 # Auth
 def logout(request):
     logout(request)
@@ -864,6 +1029,7 @@ def register(request):
                     title=address,
                     content="<h2>Home</h2>",
                     type="Home",
+                    icon="/static/images/Home_Icon_47x40.png"
                 )
                 newMarker.save()
             except:

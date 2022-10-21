@@ -13,7 +13,7 @@
 <div class="d-flex p-2 justify-content-center align-items-center flex-column gap-2">
         <div class="card text-center text-bg-secondary m-2" style="width: 100%;">
             <div class="card-body d-flex justify-content-center align-items-center flex-column gap-2">
-                <h3>Title: <input class="form-control" type="text" name="title" value="{{job.title}}"></h3>
+                <h3>Title: <input class="form-control text-center" type="text" name="title" value="{{job.title}}"></h3>
                 <h3>Description: <textarea class="form-control" type="text" name="description" style="width: 300px;">{{job.description}}</textarea></h3>
                 <div class="accordion" id="accordionExample" style="width: 200px;">
                     <div class="accordion-item">
@@ -26,7 +26,7 @@
                         <div class="accordion-body d-flex flex-column gap-2">
                             {% for user in job.people.all %}
                             <ul class="list-group">
-                                <li class="list-group-item">{{user.user.username}}</li><a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
+                                <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a></li><a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
                             </ul>
                             {% endfor %}
                         </div>
@@ -35,8 +35,8 @@
                 </div>
             </div>
         </div>
-        <a href="/delete_job/{{job.id}}" type="button" class="btn btn-danger">Delete</a>
         <input type="submit" class="btn btn-success" value="Save">
+        <a href="/delete_job/{{job.id}}" type="button" class="btn btn-danger">Delete</a>
     </div>
 </form>
 {% endblock %}

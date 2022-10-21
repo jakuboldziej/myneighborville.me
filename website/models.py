@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class WebsiteUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=100)
-    phoneNumber = models.CharField(max_length=100)
+    phoneNumber = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -12,7 +12,7 @@ class WebsiteUser(models.Model):
 class News(models.Model):
     userId = models.IntegerField()
     title = models.CharField(max_length=100)
-    description = models.TextField(max_length=10000)
+    description = models.TextField(max_length=2000)
     createdAtDate = models.DateTimeField()
     location = models.CharField(max_length=100) 
     markerId = models.IntegerField(null=True, blank=True)
@@ -23,7 +23,7 @@ class News(models.Model):
 class Event(models.Model):
     userId = models.IntegerField()
     title = models.CharField(max_length=100)
-    description = models.TextField(max_length=10000)
+    description = models.TextField(max_length=2000)
     dateStart = models.DateTimeField()
     dateEnd= models.DateTimeField()
     location = models.CharField(max_length=100)
@@ -37,7 +37,7 @@ class Job(models.Model):
     userId = models.IntegerField()
     people = models.ManyToManyField(WebsiteUser)
     title = models.CharField(max_length=100)
-    description = models.TextField(max_length=10000)
+    description = models.TextField(max_length=2000)
     location = models.CharField(max_length=100)
     markerId = models.IntegerField(null=True, blank=True)
 
@@ -53,6 +53,7 @@ class Marker(models.Model):
     news = models.ManyToManyField(News, blank=True)
     jobs = models.ManyToManyField(Job, blank=True)
     events = models.ManyToManyField(Event, blank=True)
+    icon = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.title

@@ -7,7 +7,6 @@
 #news{
     width: 50%;
     min-height: 80vh;
-
     border-bottom: 1px solid black;
 }
 #jobs{
@@ -31,7 +30,7 @@
   transform: translate(5px, -5px);
 }
 .badge{
-    z-index: 99999;
+    z-index: 99;
     font-size: 40%;
     top: 1vh;
 }
