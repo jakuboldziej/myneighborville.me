@@ -3,8 +3,8 @@ from django.contrib import admin
 from .models import WebsiteUser, News, Event, Marker, Job
 
 class WebsiteUserAdmin(admin.ModelAdmin):
-    fields = ('user', 'location', 'phoneNumber')
-    list_display = ['user', 'id', 'location', 'phoneNumber']
+    fields = ('user', 'location')
+    list_display = ['user', 'id', 'location']
 admin.site.register(WebsiteUser, WebsiteUserAdmin)
 
 class NewsAdmin(admin.ModelAdmin):
@@ -24,5 +24,5 @@ admin.site.register(Marker, MarkerAdmin)
 
 class JobAdmin(admin.ModelAdmin):
     fields = ('title', 'description', 'userId', 'location', 'people', 'markerId')
-    list_display = ['title', 'description', 'id', 'userId', 'location', 'markerId']
+    list_display = ['title', 'description', 'id', 'userId', 'location', 'peopleCount', 'markerId']
 admin.site.register(Job, JobAdmin)

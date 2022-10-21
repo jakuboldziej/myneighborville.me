@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 class WebsiteUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=100)
-    phoneNumber = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -43,6 +42,9 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+
+    def peopleCount(self):
+        return self.people.count()
 
 class Marker(models.Model):
     latitude = models.CharField(max_length=100)

@@ -16,3 +16,12 @@
   text-decoration-style: dotted;
   color: black;
 }
+@media only screen and (max-width: 600px) {
+  #map {
+    top: 110vh;
+    width: 100%;
+  }
+  #contener{
+    left: 50%;
+  }
+}

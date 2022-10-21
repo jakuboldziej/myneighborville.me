@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}{{job.title}}{% endblock %}
 {% block head %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <style>
   .apply_count{
     position: absolute;
@@ -21,6 +22,7 @@
 {% endblock %}
 
 {% block main %}
+<div id="template">
 <span style="display: flex; align-items: center; justify-content: center;">
     <h1>{{job.title}}</h1>
 </span>
@@ -30,17 +32,22 @@
           <h3 class="border-bottom">{{job.description}}</h3>
           <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
           <h5 class="apply_count">
-            <a class="text-decoration-none" href="/{% if applied %}unapply{% else %}apply{% endif %}/{{job.id}}">
+            <form method="POST" action="{% if applied %}/unapply{% else %}/apply{% endif %}/{{job.id}}" id="form">
+            {% csrf_token %}
+              <input class="d-none" id="didApply" name="didApply" value="applied">
+              <button type="submit" style="border: none; background: none;" class="text-decoration-none">
               {% if applied %}
               <img src="{% static 'images/applied.png' %}">
               {% else %}
               <img src="{% static 'images/apply.png' %}">
               {% endif %}
-            </a>
-            {{job.people.count}}
+            </button>
+            <span id="counter">{{job.people.count}}</span>
+          </form>
           </h5>
           <h5 class="location">Location: {{job.location}}</h5>
         </div>
       </div>
+</div>
 </div>
 {% endblock %}

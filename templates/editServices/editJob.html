@@ -26,7 +26,8 @@
                         <div class="accordion-body d-flex flex-column gap-2">
                             {% for user in job.people.all %}
                             <ul class="list-group">
-                                <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a></li><a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
+                                <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a> - <a class="text-decoration-none" href="mailto: {{user.user.email}}">{{user.user.email}}</a></li>
+                                <a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
                             </ul>
                             {% endfor %}
                         </div>
