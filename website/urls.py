@@ -41,7 +41,7 @@ urlpatterns = [
 
     # Auth
     path('register/', views.register, name='register'),
-    path('logout/', views.logout, name='logout'),
+    path('logout/', views.logoutView, name='logoutView'),
     path('changePassword/', views.changePassword, name='changePassword'),
     path('', include('django.contrib.auth.urls')),
 ] 

@@ -35,13 +35,17 @@
             <form method="POST" action="{% if applied %}/unapply{% else %}/apply{% endif %}/{{job.id}}" id="form">
             {% csrf_token %}
               <input class="d-none" id="didApply" name="didApply" value="applied">
+              {% if user.username != owner.user.username %}
               <button type="submit" style="border: none; background: none;" class="text-decoration-none">
-              {% if applied %}
-              <img src="{% static 'images/applied.png' %}">
+                {% if applied %}
+                <img src="{% static 'images/applied.png' %}" height=40>
+                {% else %}
+                <img src="{% static 'images/apply.png' %}" height=40>
+                {% endif %}
+              </button>
               {% else %}
-              <img src="{% static 'images/apply.png' %}">
+              <img src="{% static 'images/apply.png' %}" height=40>
               {% endif %}
-            </button>
             <span id="counter">{{job.people.count}}</span>
           </form>
           </h5>

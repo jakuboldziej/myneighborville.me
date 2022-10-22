@@ -35,7 +35,7 @@
           </ul>
           <span class="navbar-text">
             {% if user.is_authenticated %}
-            <div id="dropdown">
+            <div id="dropdown" class="position-relative">
               <button id="username" onclick="showPopUp()">{{user.username}}</button>
               <div id="userPopUp">
                 <a class="text-decoration-none link-light" href="/profile/{{user.username}}"><h4>Profile</h4></a>
@@ -67,6 +67,11 @@
           userPopUp.style.display = "block";
         }
       }
+      window.addEventListener('mousedown', function(e){
+        if(e.target != userPopUp && e.target.parentNode.parentNode != userPopUp && userPopUp.style.display == "block"){
+          userPopUp.style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>

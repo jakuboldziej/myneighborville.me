@@ -1,3 +1,4 @@
+from tabnanny import check
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -246,6 +247,7 @@ def addEvent(request):
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
                     checkMarker.type = "Multiple"
+                    checkMarker.icon = ""
 
             checkMarker.events.add(newEvent)
             checkMarker.save()
@@ -316,7 +318,10 @@ def deleteEvent(request, id):
                 objectType = "news"
             
             if markerType == "Home":
-                    result += "<h2>Home</h2>"
+                    if marker.elements() != 0:
+                        result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                    else:
+                        result = "<h2>Home</h2>"
             else:
                 result = f"""
                     <div class="text-center">
@@ -333,7 +338,10 @@ def deleteEvent(request, id):
                     else:
                         result += linia + '</br>'
             else:
-                result = "<h2>Home</h2>"
+                if marker.elements() != 0:
+                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                else:
+                    result = "<h2>Home</h2>"
 
         if markerElements == 0 and markerType != "Home":
             marker.delete()
@@ -393,8 +401,6 @@ def editEvent(request, id):
         marker.save()
         return redirect('/profile/' + request.user.username)
     else:
-        # dodać do start i end time +02:00
-        print(event.dateStart.timetz())
         context = {
             'event': event,
         }
@@ -473,8 +479,8 @@ def jobs(request):
 
 @login_required
 def job(request, id):
-    user = WebsiteUser.objects.get(id=request.user.id)
     job = Job.objects.get(id=id)
+    user = WebsiteUser.objects.get(id=request.user.id)
     owner = WebsiteUser.objects.get(id=job.userId)
 
     if user in job.people.all():
@@ -504,7 +510,7 @@ def addJob(request):
             title=title, 
             description=description,
             location=address,
-            )
+        )
         newJob.save()
         currentWebsiteUser = request.session["currentWebsiteUser"]
 
@@ -544,6 +550,7 @@ def addJob(request):
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
                     checkMarker.type = "Multiple"
+                    checkMarker.icon = ""
 
             checkMarker.jobs.add(newJob)
             checkMarker.save()
@@ -563,7 +570,7 @@ def addJob(request):
                 </div>
                 """,
                 type="Job",
-                icon="/static/images/Praca_30x40.png",
+                icon="/static/images/Praca_marker.png",
             )
             newMarker.jobs.add(newJob)
             newMarker.save()
@@ -619,7 +626,10 @@ def deleteJob(request, id):
                 objectType = "news"
                 
             if markerType == "Home":
-                    result += "<h2>Home</h2>"
+                    if marker.elements() != 0:
+                        result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                    else:
+                        result = "<h2>Home</h2>"
             else:
                 result = f"""
                     <div class="text-center">
@@ -637,7 +647,10 @@ def deleteJob(request, id):
                     else:
                         result += linia + '</br>'
             else:
-                result = "<h2>Home</h2>"
+                if marker.elements() != 0:
+                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                else:
+                    result = "<h2>Home</h2>"
 
         if markerElements == 0 and markerType != "Home":
             marker.delete()
@@ -800,7 +813,7 @@ def addNews(request):
             createdAtDate=datetime.datetime.today(),
             location=address,
             )
-        
+        newNews.save()
         currentWebsiteUser = request.session["currentWebsiteUser"]
 
         location = location[1:-1]
@@ -839,6 +852,7 @@ def addNews(request):
                     checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
                     checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
                     checkMarker.type = "Multiple"
+                    checkMarker.icon = ""
 
             checkMarker.news.add(newNews)
             checkMarker.save()
@@ -912,7 +926,10 @@ def deleteNews(request, id):
                 objectType = "news"
 
             if markerType == "Home":
-                    result += "<h2>Home</h2>"
+                if marker.elements() != 0:
+                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                else:
+                    result = "<h2>Home</h2>"
             else:
                 result = f"""
                     <div class="text-center">
@@ -930,6 +947,7 @@ def deleteNews(request, id):
                         result += linia + '</br>'
             else:
                 result = "<h2>Home</h2>"
+
         if markerElements == 0 and markerType != "Home":
             pass
             marker.delete()
@@ -991,23 +1009,18 @@ def editNews(request, id):
     
 # Auth
 def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        firstName = request.POST['firstName']
-        lastName = request.POST['lastName']
-        email = request.POST['email']
-        address = request.POST['address']
-        location = request.POST['location']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-        
-        if password != password2:
-            messages.info(request, 'Passwords don\'t match!')
-            return redirect("/register")
-        elif len(password) < 6:
-            messages.warning(request, "Password must be at least 6 characters long.")
-            return redirect('/register')
-        else:
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        if request.method == 'POST':
+            username = request.POST['username']
+            firstName = request.POST['firstName']
+            lastName = request.POST['lastName']
+            email = request.POST['email']
+            address = request.POST['address']
+            location = request.POST['location']
+            password = request.POST['password']
+            
             users = [username.username for username in User.objects.all()]
             if username in users:
                 messages.info(request, 'User already exists')
@@ -1030,7 +1043,6 @@ def register(request):
             locSplit = location.split(", ")
             lat = locSplit[0]
             lng = locSplit[1]
-
             address = address.replace(" ", "_").replace(',', '')
             try:
                 newMarker = Marker.objects.create(
@@ -1039,21 +1051,21 @@ def register(request):
                     title=address,
                     content="<h2>Home</h2>",
                     type="Home",
-                    icon="/static/images/Home_Icon_47x40.png"
+                    icon="/static/images/Home_marker.png"
                 )
                 newMarker.save()
             except:
                 _ = 0
             return redirect("/login")
-    else:
-        api_key = settings.GOOGLE_API_KEY
+        else:
+            api_key = settings.GOOGLE_API_KEY
 
-        context = {
-            'api_key': api_key,
-        }
-        return render(request, "registration/register.html", context)
+            context = {
+                'api_key': api_key,
+            }
+            return render(request, "registration/register.html", context)
 
-def logout(request):
+def logoutView(request):
     logout(request)
     return redirect('/')
 
@@ -1062,20 +1074,15 @@ def changePassword(request):
         user = request.user
         oldPassword = request.POST["oldPassword"]
         newPassword1 = request.POST["newPassword1"]
-        newPassword2 = request.POST["newPassword2"]
         
         check_password = user.check_password(str(oldPassword))
         
         if check_password:
-            if newPassword1 == newPassword2:
-                user.set_password(newPassword1)
-                user.save()
-                return redirect('/profile/settings/' + request.user.username)
-            else:
-                messages.info(request, 'Password doesn\'t match')
-                return redirect('/changePassword/')
+            user.set_password(newPassword1)
+            user.save()
+            return redirect('/profile/settings/' + request.user.username)
         else:
-            messages.info(request, 'Your password is wrong!')
+            messages.info(request, 'Your old password is wrong!')
             return redirect('/changePassword/')
     else:
         return render(request, 'registration/changePassword.html')

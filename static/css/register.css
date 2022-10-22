@@ -3,6 +3,8 @@
   left: 25%;
   max-height: 0px;
   margin-top: 10px;
+  width: 345px;
+
 }
 #map{
   position: absolute;
@@ -24,4 +26,8 @@
   #contener{
     left: 50%;
   }
+}
+#alert1, #alert2{
+  display: none;
+  width: 345px;
 }

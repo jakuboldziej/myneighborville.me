@@ -11,16 +11,14 @@
     background-color: black;
     color: white;
     border-radius: 10px;
-    width: 15vh;
-    right: 0.8vw;
-    top: 6vh;
+    width: 140px;
+    right: -0.5vw;
     padding: 5px;
     text-align: center;
 }
 @media only screen and (max-width: 600px) {
     #userPopUp {
-        left: 0.8vw;
-        top: 40vh;
+        left: 0.5vw;
     }
 }
 .back-to-top {

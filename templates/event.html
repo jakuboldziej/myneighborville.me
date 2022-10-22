@@ -32,6 +32,7 @@
           <h3>Start Date: {{event.dateEnd}}</h3>
           <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
           <h5 class="person_count">
+            {% if user.username != owner.user.username %}
             <a class="text-decoration-none" href="/{% if participating %}unparticipate{% else %}participate{% endif %}/{{event.id}}">
               {% if participating %}
               <img src="{% static 'images/star-filled.png' %}" height=35>
@@ -39,6 +40,9 @@
               <img src="{% static 'images/star.png' %}" height=35>
               {% endif %}
             </a>
+            {% else %}
+            <img src="{% static 'images/star.png' %}" height=35>
+            {% endif %}
             {{event.participants.count}}
           </h5>
           <h5 class="location">Location: {{event.location}}</h5>
