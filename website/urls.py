@@ -7,7 +7,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('map/', views.map, name='map'),
     path('home_list/', views.home_list, name='home_list'),
-    
+    path('filter/', views.filter, name='filter'),
+
     # Profile 
     path('profile/<str:nick>', views.profile, name='profile'),
     path('profile/settings/<str:nick>', views.profileSettings, name='profileSettings'),
@@ -19,9 +20,8 @@ urlpatterns = [
     path('delete_event/<int:id>', views.deleteEvent, name='deleteEvent'),
     path('events/edit_event/<int:id>', views.editEvent, name='editEvent'),
     path('delete_user_from_event/<int:eventId>/<int:userId>', views.deleteUserFromEvent, name='deleteUserFromEvent'),
-    path('participate/<int:eventId>', views.participate, name="participate"),
-    path('unparticipate/<int:eventId>', views.unparticipate, name="unparticipate"),
-    
+    path('events/participate/', views.participate, name="participate"),
+
     # Jobs
     path('jobs/', views.jobs, name='jobs'),
     path('jobs/<int:id>', views.job, name='job'),
@@ -29,8 +29,7 @@ urlpatterns = [
     path('delete_job/<int:id>', views.deleteJob, name='deleteJob'),
     path('jobs/edit_job/<int:id>', views.editJob, name='editJob'),
     path('delete_user_from_job/<int:jobId>/<int:userId>', views.deleteUserFromJob, name='deleteUserFromJob'),
-    path('apply/<int:jobId>', views.apply, name="apply"),
-    path('unapply/<int:jobId>', views.unapply, name="unapply"),
+    path('jobs/apply/', views.apply, name="apply"),
 
     # News  
     path('news/', views.news, name='news'),

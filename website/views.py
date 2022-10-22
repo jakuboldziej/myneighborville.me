@@ -74,6 +74,20 @@ def home_list(request):
     }
     return render(request, 'home_list.html', context)
 
+@login_required
+def filter(request):
+    if request.POST['action']:
+        filter = request.POST['filter']
+        result = ''
+        if filter == "All":
+            result = "City"
+        else:
+            result = "All"
+        data = {
+            'result': result,
+        }
+        return JsonResponse(data)
+
 # Profile
 @login_required
 def profile(request, nick):
@@ -126,43 +140,14 @@ def profileSettings(request, nick):
 def events(request):
     users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
-    if request.method == "POST":
-        result = request.POST["result"]
+    events = Event.objects.all()
+    
+    userLocation = user.location.split(', ')[0]
 
-        if result == "all":
-            request.session["filter"] = "all"
-        else:
-            request.session["filter"] = "city"
-        return redirect('events')
-    else:
-        users = WebsiteUser.objects.all()
-        try:
-            filter = request.session["filter"]
-        except:
-            filter = "none"
-        
-        if filter == "all":
-            events = Event.objects.all().order_by('-id')
-
-        elif filter == "city":
-            events = Event.objects.filter(location__contains=user.location).order_by('-id')
-        else:
-            events = Event.objects.all().order_by('-id')
-            try:
-                filter = request.session["filter"]
-            except:
-                filter = "none"
-
-            context = {
-                'events': events,
-                'users': users,
-                'filter': filter,
-            }
-            return render(request, 'displayServices/events.html', context)
     context = {
         'events': events,
         'users': users,
-        'filter': filter,
+        'userLocation': userLocation,
     }
     return render(request, 'displayServices/events.html', context)
 
@@ -419,63 +404,45 @@ def deleteUserFromEvent(request, eventId, userId):
     return redirect('/jobs/edit_job/' + str(eventId))
 
 @login_required
-def participate(request, eventId):
+def participate(request):
     user = WebsiteUser.objects.get(id=request.user.id)
-    event = Event.objects.get(id=eventId)
-    
-    event.participants.add(user)
-    event.save()
+    if request.POST['action'] == 'post':
+        result = ''
+        id = int(request.POST['eventId'])
+        event = Event.objects.get(id=id)
+        if event.participants.filter(id=user.id).exists():
+            event.participants.remove(user)
+            result = event.participants.count()
+            event.save()
+            participating = False
+        else:
+            
+            event.participants.add(user)
+            result = event.participants.count()
+            event.save()
+            participating = True
 
-    return redirect('/events/' + str(eventId))
-
-@login_required
-def unparticipate(request, eventId):
-    user = WebsiteUser.objects.get(id=request.user.id)
-    event = Event.objects.get(id=eventId)
-    
-    event.participants.remove(user)
-    event.save()
-
-    return redirect('/events/' + str(eventId))
+        data = {
+            'result': result,
+            'participating': participating,
+        }
+        return JsonResponse(data)
 
 # Jobs
 @login_required
 def jobs(request):
     users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
+    jobs = Job.objects.all()
 
-    if request.method == "POST":
-        result = request.POST["result"]
+    userLocation = user.location.split(', ')[0]
 
-        if result == "all":
-            request.session["filter"] = "all"
-        else:
-            request.session["filter"] = "city"
-        return redirect('jobs')
-    else:
-        users = WebsiteUser.objects.all()
-        try:
-            filter = request.session["filter"]
-        except:
-            filter = "none"
-        
-        if filter == "all":
-            jobs = Job.objects.all().order_by('-id')
-        elif filter == "city":
-            jobs = Job.objects.filter(location__contains=user.location).order_by('-id')
-        else:
-            jobs = Job.objects.all().order_by('-id')
-            try:
-                filter = request.session["filter"]
-            except:
-                filter = "none"
-
-        context = {
-            'jobs': jobs,
-            'users': users,
-            'filter': filter,
-        }
-        return render(request, 'displayServices/jobs.html', context)
+    context = {
+        'jobs': jobs,
+        'users': users,
+        'userLocation': userLocation,
+    }
+    return render(request, 'displayServices/jobs.html', context)
 
 @login_required
 def job(request, id):
@@ -487,7 +454,6 @@ def job(request, id):
         applied = True
     else:
         applied = False
-    print(applied)
     context = {
         'job': job,
         'owner': owner,
@@ -720,71 +686,45 @@ def deleteUserFromJob(request, jobId, userId):
     return redirect('/jobs/edit_job/' + str(jobId))
 
 @login_required
-def apply(request, jobId):
+def apply(request):
     user = WebsiteUser.objects.get(id=request.user.id)
-    job = Job.objects.get(id=jobId)
-    
-    job.people.add(user)
-    job.save()
-    applied = job.people.count()
+    if request.POST['action'] == 'post':
+        result = ''
+        id = int(request.POST['jobId'])
+        job = Job.objects.get(id=id)
+        if job.people.filter(id=user.id).exists():
+            job.people.remove(user)
+            result = job.people.count()
+            job.save()
+            applied = False
+        else:
+            
+            job.people.add(user)
+            result = job.people.count()
+            job.save()
+            applied = True
 
-    data = {
-        'applied': applied,
-    }
-    # return JsonResponse(data)
-    return redirect('/jobs/' + str(jobId))
+        data = {
+            'result': result,
+            'applied': applied,
+        }
+        return JsonResponse(data)
         
-@login_required
-def unapply(request, jobId):
-    user = WebsiteUser.objects.get(id=request.user.id)
-    job = Job.objects.get(id=jobId)
-    
-    job.people.remove(user)
-    job.save()
-
-    applied = job.people.count()
-    data = {
-        'applied': applied,
-    }
-    # return JsonResponse(data)
-    return redirect('/jobs/' + str(jobId))
-
 # News
 @login_required
 def news(request):
+    users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
-    if request.method == "POST":
-        result = request.POST["result"]
+    news = News.objects.all()
 
-        if result == "all":
-            request.session["filter"] = "all"
-        else:
-            request.session["filter"] = "city"
-        return redirect('news')
-    else:
-        users = WebsiteUser.objects.all()
-        try:
-            filter = request.session["filter"]
-        except:
-            filter = "none"
-        
-        if filter == "all":
-            news = News.objects.all().order_by('-id')
-        elif filter == "city":
-            news = News.objects.filter(location__contains=user.location).order_by('-id')
-        else:
-            news = News.objects.all().order_by('-id')
-            try:
-                filter = request.session["filter"]
-            except:
-                filter = "none"
+    userLocation = user.location.split(', ')[0]
 
-        context = {
-            'news': news,
-            'users': users,
-            'filter': filter,
-        }
-        return render(request, 'displayServices/news.html', context)
+    context = {
+        'news': news,
+        'users': users,
+        'userLocation': userLocation,
+    }
+    return render(request, 'displayServices/news.html', context)
 
 @login_required
 def oneNews(request, id):

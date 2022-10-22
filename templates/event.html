@@ -33,20 +33,46 @@
           <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
           <h5 class="person_count">
             {% if user.username != owner.user.username %}
-            <a class="text-decoration-none" href="/{% if participating %}unparticipate{% else %}participate{% endif %}/{{event.id}}">
+            <button id="submit" type="submit" style="border: none; background: none;" class="text-decoration-none">
               {% if participating %}
-              <img src="{% static 'images/star-filled.png' %}" height=35>
+              <img id="image" src="{% static 'images/star-filled.png' %}" height=35>
               {% else %}
-              <img src="{% static 'images/star.png' %}" height=35>
+              <img id="image" src="{% static 'images/star.png' %}" height=35>
               {% endif %}
-            </a>
+            </button>
             {% else %}
             <img src="{% static 'images/star.png' %}" height=35>
             {% endif %}
-            {{event.participants.count}}
+            <span id="counter">{{event.participants.count}}</span>
           </h5>
           <h5 class="location">Location: {{event.location}}</h5>
         </div>
       </div>
 </div>
+<script>
+  $(document).on('click', '#submit', function(e){
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '/events/participate/',
+      data: {
+        eventId: {{event.id}},
+        csrfmiddlewaretoken: '{{csrf_token}}',
+        action: 'post'
+      },
+      success: function(json){
+        document.getElementById("counter").innerHTML = json['result']
+        if (json['participating']){
+          console.log($("i"))
+          $("#image").attr('src', '{% static "images/star-filled.png" %}')
+        }else{
+          $("#image").attr('src', '{% static "images/star.png" %}')
+        }
+      },
+      error: function(error){
+        console.log(error)
+      }
+    })
+  });
+</script>
 {% endblock %}

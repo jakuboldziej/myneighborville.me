@@ -50,22 +50,17 @@
 {% endblock %}
 {% block main %}
 <div class="filters p-3 position-absolute">
-  <form method="POST">
-    {% csrf_token %}
     <div class="input-group mb-3">
       <span class="filter input-group-text">Filters</span>
-      <input type="submit" id="all" class="btn {% if filter == 'all' %}btn-success{% elif filter == 'city' %}btn-danger{% else %}btn-success{% endif %}" {% if filter == 'all' %}disabled{% else %}{% endif %} value="All">
-      <input type="submit" id="city" class="btn {% if filter == 'city' %}btn-success{% elif filter == 'all' %}btn-danger{% else %}btn-success{% endif %}" {% if filter == 'city' %}disabled{% else %}{% endif %} value="City">
+      <button type="submit" id="filter" class="btn btn-success">City</button>
     </div>
-    <input id="result" name="result" class="d-none">
-  </form>
 </div>
 <span style="display: flex; align-items: center; justify-content: center;">
     <h1>Events</h1>
 </span>
   <div class="events d-flex flex-wrap gap-2 p-2">
     {% for event in events %}
-    <div onclick="location.href='/events/{{event.id}}';" class="event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
+    <div onclick="location.href='/events/{{event.id}}';" class="{% if userLocation in event.location %}city{% else %}all{% endif %} event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
       <div class="card-body">
         <h2>{{event.title}}</h2>
         <h3 class="description">{{event.description}}</h3>
@@ -83,17 +78,35 @@
 <button id="back-to-top" onclick="topFunction()" class="btn btn-dark btn-lg back-to-top" role="button"><i class="fas fa-chevron-up"></i></button>
 <script src="{% static 'js/scroll-top.js' %}"></script>
 <script>
-  const city = document.getElementById("city");
-  const all = document.getElementById("all");
-  let result = document.getElementById("result");
-
-  city.addEventListener('click', cityFun);
-  all.addEventListener('click', allFun);
-  function cityFun(){
-    result.value = "city";
-  }
-  function allFun(){
-    result.value = "all";
-  }
+  $(document).on('click', '#filter', function(e){
+    e.preventDefault()
+    filter = $("#filter")
+    if (filter.text() == "All"){
+      filter.text("City") 
+    }else{
+      filter.text("All") 
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/filter/',
+      data: {
+        filter: filter.text(),
+        csrfmiddlewaretoken: '{{csrf_token}}',
+        action: 'post'
+      },
+      success: function(json){
+        if (json['result'] == "All"){
+          $(".city").show()
+          $(".all").show()
+        }else{
+          $(".city").show()
+          $(".all").hide()
+        }
+      },
+      error: function(error){
+        console.log(error)
+      }
+    });
+  });
 </script>
 {% endblock %}
