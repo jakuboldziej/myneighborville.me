@@ -35,7 +35,9 @@
         zoom: 13,
         center: {{userLocation}},
       });
-
+      const mapDiv = document.getElementById('map').getElementsByTagName('div')[0];
+      mapDiv.appendChild(document.getElementById("accordion"));
+       
       let filterType = "loadCity";
       let alreadyZoomed = false;
       map.addListener("zoom_changed", () => {
