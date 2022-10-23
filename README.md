@@ -12,7 +12,7 @@ Google - Maps Platform API<br>
 Lokalna instalacja Windows 
 1. Zainstaluj git i sklonuj repozytorium<br>
 https://git-scm.com/downloads<br>
-git clone https://github.com/jakuboldziej/hack-heroes.git<br>
+git clone https://github.com/jakuboldziej/myneighborville.me.git<br>
 2. Zainstaluj python python.org<br>
 3. Stwórz wirtualne środowisko python w folderze /hack-heroes i zainstaluj wymagania.<br>
 python -m venv venv<br>
