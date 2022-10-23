@@ -34,3 +34,22 @@
     font-size: 40%;
     top: 1vh;
 }
+.filters{
+    height: 40px;
+    z-index: 999;
+}
+#filter{
+    width: 90px;
+    height: 40px;
+}
+@media only screen and (max-width: 600px) {
+    #events, #jobs, #news{
+        text-align: center;
+    }
+    .filters{
+        top: -8px;
+        left: 39%;
+        z-index: 9999;
+        height: 40px;
+    }
+  }

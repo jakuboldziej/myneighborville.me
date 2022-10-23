@@ -26,19 +26,23 @@
   }
   #filter{
     width: 90px;
+    height: 40px;
+  }
+  .filters{
+    z-index: 999;
   }
   @media only screen and (max-width: 600px) {
-    .filters {
-      top: 75px;
-    }
-    .newsTable{
-      margin-top: 25px;
+    .filters{
+      top: -8px;
+      left: 39%;
+      z-index: 9999;
+      height: 40px;
     }
   }
   </style>
 {% endblock %}
 {% block main %}
-<div class="filters p-3 position-absolute">
+<div class="filters p-3 position-fixed">
   <div class="input-group mb-3">
     <span class="filter input-group-text">Filtr</span>
     <button type="submit" id="filter" class="btn btn-success">Miasto</button>

@@ -10,7 +10,7 @@
 </span>
 <div class="d-flex p-2 justify-content-center">
       <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
-        <div class="card-body d-flex justify-content-center align-items-center gap-2">
+        <div class="card-body d-flex justify-content-center align-items-center flex-column gap-2">
           <form method="POST">
           {% csrf_token %}
           <h3>Nazwa użytkownika: </h3><input class="form-control text-center" type="text" name="username" value="{{currentUser.user.username}}">
@@ -18,13 +18,14 @@
           <h3>Lokalizacja: </h3>
           <div class="input-group mb-3">
             <input id="address" class="form-control text-center" type="text" name="address" value="{{currentUser.location}}" aria-describedby="button-addon"><br>
-            <input type="button" id="button-addon" class="btn btn-primary" onclick="codeAddress()" value="Zmień">
+            <input type="button" id="button-addon" class="btn btn-primary rounded-end" onclick="codeAddress()" value="Zmień">
             <input class="d-none" id="changingLocation" name="changingLocation">
           </div>
           <input class="d-none" id="location" name="location">
           <a href="/changePassword" type="button" class="btn btn-warning">Zmień hasło</a><br><br>
           <input type="submit" id="save" class="btn btn-success" value="Zapisz">
-          </form>
+        </form>
+        <p class="opacity-50">Kontakt z administratorem strony w razie problemów: <a class="text-decoration-none" href="mailto: jakub.oldziej@wp.pl">jakub.oldziej@wp.pl</a></p>
         </div>
       </div>
 </div>

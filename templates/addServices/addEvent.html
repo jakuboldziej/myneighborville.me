@@ -44,6 +44,12 @@
 <form method="POST" class="form-group">
     {% csrf_token %}
     {{form}}
+    <a href="#" id="btnModal" data-bs-toggle="modal" class="form-label text-decoration-dotted" data-bs-target="#modal1">Lokalizacja</a>
+      <div class="input-group mb-3">
+        <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
+        <input type="button" id="button-addon" class="btn btn-outline-secondary rounded-end" onclick="codeAddress()" value="Znajdź">
+        <input id="location" name="location" class="d-none">
+      </div>
     <div class="mb-3">
       <label class="form-label">Tytuł</label>
       <input type="text" name="title" class="form-control" placeholder="Tytuł..." maxlength='100' required>
@@ -60,12 +66,6 @@
       <label class="form-label">Koniec</label>
       <input type="datetime-local" name="dateEnd" class="form-control" required>
     </div>
-    <a href="#" id="btnModal" data-bs-toggle="modal" class="form-label text-decoration-dotted" data-bs-target="#modal1">Lokalizacja</a>
-      <div class="input-group mb-3">
-        <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
-        <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Znajdź">
-        <input id="location" name="location" class="d-none">
-      </div>
     <button id="submit" type="submit" class="btn btn-success" disabled>Dodaj</button>
   </form>
 </div>
@@ -80,13 +80,36 @@
         <h5>Możesz wpisać pełną lokalizację lub tylko nazwę miasta.</h5>
         <h5>Proszę wpisywać lokalizację następująco: [Miasto], [Nazwa ulicy] [Numer domu] lub po prostu [Miasto].</h5>
         <h5>Przykład: Wrocław, Sucha 1</h5>
-        <h5>Lokalizacja jest potrzebna aby inni użytkownicy mogli zobaczyć twoje wydarzenia, aktualności oraz oferty pracy.</h5>
+        <h5>Lokalizacja jest potrzebna aby inni użytkownicy mogli zobaczyć twoje wydarzenie.</h5>
         <h5>Lokalizacja wydarzenia będzie publicznie dostępna.</h5>
         <h5>Uważnie sprawdź poprawność wpisanej przez ciebie lokalizacji.</h5>
       </div>
     </div>
   </div>
 </div>
+<div class="toast-container position-fixed bottom-0 start-0 p-3">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Lokalizacja</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Sprawdź poprawność wpisanej lokalizacji!<br>
+      Przykładowa lokalizacja: Wrocław, Sucha 1.
+    </div>
+  </div>
+</div>
+<script>
+  const toastTrigger = document.getElementById('button-addon')
+  const toastLive = document.getElementById('liveToast')
+  if (toastTrigger) {
+    toastTrigger.addEventListener('click', () => {
+      const toast = new bootstrap.Toast(toastLive)
+
+      toast.show()
+    })
+  }
+</script>
 <div id="map"></div>
   <script>
     let geocoder;
@@ -128,12 +151,5 @@
   </script>
   <script async
     src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
-</script>
-<script>
-  $(document).on('click', '#button-addon', function(e){
-    let address = $("#address").val()
-    console.log(address.split(", ")[0])
-    console.log("{{userLocation}}".split("_")[0])
-  }); 
 </script>
 {% endblock %}

@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
+from django.forms.models import model_to_dict
 
+import json
 import datetime
-
-from matplotlib.dates import WE
 
 from .models import WebsiteUser, Event, News, Marker, Job
 
@@ -20,6 +20,7 @@ def view_page_not_found(request):
 # Views
 @login_required
 def index(request):
+    websiteUser = WebsiteUser.objects.get(id=request.user.id)
     displayedElements = 12
     events = Event.objects.all().order_by('-id')
     news = News.objects.all().order_by('-id')
@@ -36,6 +37,7 @@ def index(request):
         'eventsCount': eventsCount,
         'newsCount': newsCount,
         'jobsCount': jobsCount,
+        'userLocation': websiteUser.location,
     }
     return render(request, 'index.html', context)
 
@@ -49,6 +51,7 @@ def map(request):
     markers = Marker.objects.all()
     allMarkers = [marker for marker in markers]
     cityMarkers = [marker for marker in markers if userCity in marker.title]
+    
     context = {
         'markers': markers,
         'allMarkers': allMarkers,
@@ -75,6 +78,7 @@ def home_list(request):
     }
     return render(request, 'home_list.html', context)
 
+# Usage
 @login_required
 def filter(request):
     if request.POST['action']:
@@ -89,23 +93,56 @@ def filter(request):
         }
         return JsonResponse(data)
 
+def loadMore(request):
+    if request.POST['action']:
+        if request.POST['object'] == 'all':
+            request.session['loadNews'] = 12
+            request.session['loadEvents'] = 12
+            request.session['loadJobs'] = 12
+            result = 12
+        elif request.POST['object'] == 'news':
+            request.session['loadNews'] += 6
+            result = request.session['loadNews']
+        elif request.POST['object'] == 'events':
+            request.session['loadEvents'] += 6
+            result = request.session['loadEvents']
+        elif request.POST['object'] == 'jobs':
+            request.session['loadJobs'] += 6
+            result = request.session['loadJobs']
+
+        data = {
+            'result': result,
+        }
+        return JsonResponse(data)
+
 # Profile
 @login_required
 def profile(request, nick):
     currentUser = User.objects.get(username=nick)
     currentWebsiteUser = WebsiteUser.objects.get(user=currentUser)
-    userEvents = Event.objects.filter(userId=currentWebsiteUser.id).order_by('id')
-    userNews = News.objects.filter(userId=currentWebsiteUser.id)
-    userJobs = Job.objects.filter(userId=currentWebsiteUser.id)
-    request.session["currentWebsiteUser"] = currentWebsiteUser.user.username
+    userEvents = Event.objects.filter(userId=currentWebsiteUser.id).order_by('-id')
+    userNews = News.objects.filter(userId=currentWebsiteUser.id).order_by('-id')
+    userJobs = Job.objects.filter(userId=currentWebsiteUser.id).order_by('-id')
+
+    request.session['loadNews'] = 12
+    request.session['loadEvents'] = 12
+    request.session['loadJobs'] = 12
+
+    loadNews = 12
+    loadEvents = 12
+    loadJobs = 12
 
     context = {
         'currentUser': currentWebsiteUser,
         'userEvents': userEvents,
         'userNews': userNews,
         'userJobs': userJobs,
+        'loadNews': loadNews,
+        'loadEvents': loadEvents,
+        'loadJobs': loadJobs,
     }
     return render(request, 'profile.html', context)
+
 
 @login_required
 def profileSettings(request, nick):
@@ -280,7 +317,6 @@ def addEvent(request):
             location=address,
         )
         newEvent.save()
-        currentWebsiteUser = request.session["currentWebsiteUser"]
 
         location = location[1:-1]
         locSplit = location.split(", ")
@@ -310,7 +346,7 @@ def addEvent(request):
                     <h3 class="object_description">{newEvent.description}</h3>
                     </div>
                     """
-                checkMarker.type = "Event"
+                checkMarker.type = "Events"
 
             checkMarker.save()
             newEvent.markerId = checkMarker.id
@@ -327,7 +363,7 @@ def addEvent(request):
                 <h3 class="object_description">{newEvent.description}</h3>
                 </div>
                 """,
-                type="Event",
+                type="Events",
             )
             newMarker.events.add(newEvent)
             newMarker.save()
@@ -335,7 +371,7 @@ def addEvent(request):
             newEvent.markerId = newMarker.id
             newEvent.save()
 
-        return redirect('/profile/' + str(currentWebsiteUser))
+        return redirect('/profile/' + str(currentWebsiteUser.user.username))
     else:
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()
@@ -354,55 +390,9 @@ def deleteEvent(request, id):
     marker = Marker.objects.get(id=event.markerId)
     marker.events.get(id=id).delete()
     event.delete()
-    markerElements = marker.elements()
     marker.save()
 
-    if marker:
-        if markerElements > 1:
-            marker.content = ''
-            if marker.news.all().count() != 0:
-                for n in marker.news.all():
-                    marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
-            if marker.events.all().count() != 0:
-                for event in marker.events.all():
-                    marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
-            if marker.jobs.all().count() != 0:
-                for job in marker.jobs.all():
-                    marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
-            marker.type = "Multiple"
-            marker.save()
-            
-        elif markerElements == 1:
-            if marker.news.all().count() == 1:
-                markerObject = marker.news.first()
-                objectType = "news"
-            if marker.events.all().count() == 1:
-                markerObject = marker.events.first()
-                objectType = "events"
-            if marker.jobs.all().count() == 1:
-                markerObject = marker.jobs.first()
-                objectType = "jobs"
-            
-            marker.content = f"""
-                <div class="text-center">
-                <a class="object_title" href='/{objectType}/{markerObject.id}'><h2>{markerObject.title}</h2></a></br>
-                <h3 class="object_description">{markerObject.description}</h3>
-                </div>
-                """
-            marker.type = objectType.capitalize()
-            marker.save()
-        else:
-            delete = True
-            websiteUser = WebsiteUser.objects.all()
-            for user in websiteUser:
-                if user.location.replace(" ", "_").replace(",", "") == marker.title:
-                        delete = False
-            if delete:
-                    marker.delete()
-            else:
-                marker.content = "<h2>Home</h2>"
-                marker.type = "Home"
-                marker.save()
+    deletingService(marker)
     
     return redirect('/profile/' + request.user.username)
 
@@ -426,26 +416,8 @@ def editEvent(request, id):
         event.dateEnd = dateEnd
         event.save()
 
-        if marker.elements() > 1:
-            marker.content = ''
-            for n in marker.news.all():
-                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
-            for event in marker.events.all():
-                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
-            for job in marker.jobs.all():
-                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
-            marker.type = "Multiple"
-            
-        else:
-            marker.content = f"""
-                <div class="text-center">
-                <a class="object_title" href='/events/{event.id}'><h2>{event.title}</h2></a></br>
-                <h3 class="object_description">{event.description}</h3>
-                </div>
-                """
-            marker.type = "Event"
+        editingService(marker, event, "events")
 
-        marker.save()
         return redirect('/profile/' + request.user.username)
     else:
         context = {
@@ -540,7 +512,6 @@ def addJob(request):
             location=address,
         )
         newJob.save()
-        currentWebsiteUser = request.session["currentWebsiteUser"]
 
         location = location[1:-1]
         locSplit = location.split(", ")
@@ -570,7 +541,7 @@ def addJob(request):
                     <h3 class="object_description">{newJob.description}</h3>
                     </div>
                     """
-                checkMarker.type = "Job"
+                checkMarker.type = "Jobs"
 
             checkMarker.save()
 
@@ -588,7 +559,7 @@ def addJob(request):
                 <h3 class="object_description">{newJob.description}</h3>
                 </div>
                 """,
-                type="Job",
+                type="Jobs",
                 icon="/static/images/Praca_marker.png",
             )
             newMarker.jobs.add(newJob)
@@ -597,7 +568,7 @@ def addJob(request):
             newJob.markerId = newMarker.id
             newJob.save()
 
-        return redirect('/profile/' + str(currentWebsiteUser))
+        return redirect('/profile/' + str(currentWebsiteUser.user.username))
     else:
         api_key = settings.GOOGLE_API_KEY
         userLocation = currentWebsiteUser.location
@@ -617,55 +588,9 @@ def deleteJob(request, id):
     marker = Marker.objects.get(id=job.markerId)
     marker.jobs.get(id=id).delete()
     job.delete()
-    markerElements = marker.elements()
     marker.save()
 
-    if marker:
-        if markerElements > 1:
-            marker.content = ''
-            if marker.news.all().count() != 0:
-                for n in marker.news.all():
-                    marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
-            if marker.events.all().count() != 0:
-                for event in marker.events.all():
-                    marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
-            if marker.jobs.all().count() != 0:
-                for job in marker.jobs.all():
-                    marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
-            marker.type = "Multiple"
-            marker.save()
-            
-        elif markerElements == 1:
-            if marker.news.all().count() == 1:
-                markerObject = marker.news.first()
-                objectType = "news"
-            if marker.events.all().count() == 1:
-                markerObject = marker.events.first()
-                objectType = "events"
-            if marker.jobs.all().count() == 1:
-                markerObject = marker.jobs.first()
-                objectType = "jobs"
-            
-            marker.content = f"""
-                <div class="text-center">
-                <a class="object_title" href='/{objectType}/{markerObject.id}'><h2>{markerObject.title}</h2></a></br>
-                <h3 class="object_description">{markerObject.description}</h3>
-                </div>
-                """
-            marker.type = objectType.capitalize()
-            marker.save()
-        else:
-            delete = True
-            websiteUser = WebsiteUser.objects.all()
-            for user in websiteUser:
-                if user.location.replace(" ", "_").replace(",", "") == marker.title:
-                    delete = False
-            if delete:
-                marker.delete()
-            else:
-                marker.content = "<h2>Home</h2>"
-                marker.type = "Home"
-                marker.save()
+    deletingService(marker)
     
     return redirect('/profile/' + request.user.username)
 
@@ -681,26 +606,8 @@ def editJob(request, id):
         job.description = description
         job.save()
 
-        if marker.elements() > 1:
-            marker.content = ''
-            for n in marker.news.all():
-                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
-            for event in marker.events.all():
-                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
-            for job in marker.jobs.all():
-                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
-            marker.type = "Multiple"
-            
-        else:
-            marker.content = f"""
-                <div class="text-center">
-                <a class="object_title" href='/events/{job.id}'><h2>{job.title}</h2></a></br>
-                <h3 class="object_description">{job.description}</h3>
-                </div>
-                """
-            marker.type = "Job"
-                        
-        marker.save()
+        editingService(marker, job, "jobs")
+
         return redirect('/profile/' + request.user.username)
     else:
         context = {
@@ -789,7 +696,6 @@ def addNews(request):
             location=address,
             )
         newNews.save()
-        currentWebsiteUser = request.session["currentWebsiteUser"]
 
         location = location[1:-1]
         locSplit = location.split(", ")
@@ -845,7 +751,7 @@ def addNews(request):
             newNews.markerId = newMarker.id
             newNews.save()
 
-        return redirect('/profile/' + str(currentWebsiteUser))
+        return redirect('/profile/' + str(currentWebsiteUser.user.username))
     else:
         api_key = settings.GOOGLE_API_KEY
         markers = Marker.objects.all()        
@@ -865,11 +771,40 @@ def deleteNews(request, id):
     marker = Marker.objects.get(id=news.markerId)
     marker.news.get(id=id).delete()
     news.delete()
-    markerElements = marker.elements()
     marker.save()
 
+    deletingService(marker)
+    
+    return redirect('/profile/' + request.user.username)
+
+@login_required
+def editNews(request, id):
+    news = News.objects.get(id=id)
+    marker = Marker.objects.get(id=news.markerId)
+    if request.method == "POST":
+        title = request.POST['title']
+        description = request.POST['description']
+
+        news.title = title
+        news.description = description
+        news.save()
+
+        editingService(marker, news, "news")
+
+        return redirect('/profile/' + request.user.username)
+    else:
+        context = {
+            'news': news,
+        }
+        if news.userId == request.user.id:
+            return render(request, 'editServices/editNews.html', context)
+        else:
+            return redirect('/')
+    
+# Managing Services
+def deletingService(marker):
     if marker:
-        if markerElements > 1:
+        if marker.elements() > 1:
             marker.content = ''
             if marker.news.all().count() != 0:
                 for n in marker.news.all():
@@ -883,7 +818,7 @@ def deleteNews(request, id):
             marker.type = "Multiple"
             marker.save()
             
-        elif markerElements == 1:
+        elif marker.elements() == 1:
             if marker.news.all().count() == 1:
                 markerObject = marker.news.first()
                 objectType = "news"
@@ -907,58 +842,36 @@ def deleteNews(request, id):
             websiteUser = WebsiteUser.objects.all()
             for user in websiteUser:
                 if user.location.replace(" ", "_").replace(",", "") == marker.title:
-                    delete = False
+                        delete = False
             if delete:
-                marker.delete()
+                    marker.delete()
             else:
                 marker.content = "<h2>Home</h2>"
                 marker.type = "Home"
                 marker.save()
-    
-    return redirect('/profile/' + request.user.username)
 
-@login_required
-def editNews(request, id):
-    news = News.objects.get(id=id)
-    marker = Marker.objects.get(id=news.markerId)
-    if request.method == "POST":
-        title = request.POST['title']
-        description = request.POST['description']
-
-        news.title = title
-        news.description = description
-        news.save()
-
-        if marker.elements() > 1:
-            marker.content = ''
-            for n in marker.news.all():
-                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
-            for event in marker.events.all():
-                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
-            for job in marker.jobs.all():
-                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
-            marker.type = "Multiple"
-            
-        else:
-            marker.content = f"""
-                <div class="text-center">
-                <a class="object_title" href='/events/{news.id}'><h2>{news.title}</h2></a></br>
-                <h3 class="object_description">{news.description}</h3>
-                </div>
-                """
-            marker.type = "News"
-
-        marker.save()
-        return redirect('/profile/' + request.user.username)
+def editingService(marker, object, type):
+    if marker.elements() > 1:
+        marker.content = ''
+        for n in marker.news.all():
+            marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+        for event in marker.events.all():
+            marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+        for job in marker.jobs.all():
+            marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+        marker.type = "Multiple"
+        
     else:
-        context = {
-            'news': news,
-        }
-        if news.userId == request.user.id:
-            return render(request, 'editServices/editNews.html', context)
-        else:
-            return redirect('/')
+        marker.content = f"""
+            <div class="text-center">
+            <a class="object_title" href='/{type}/{object.id}'><h2>{object.title}</h2></a></br>
+            <h3 class="object_description">{object.description}</h3>
+            </div>
+            """
+        marker.type = type.capitalize()
     
+    marker.save()
+
 # Auth
 def register(request):
     if request.user.is_authenticated:

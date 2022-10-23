@@ -5,6 +5,12 @@
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 {% block main %}
+<div class="filters p-3 position-fixed">
+  <div class="input-group mb-3">
+    <span class="filter input-group-text">Filtr</span>
+    <button type="submit" id="filter" class="btn btn-success">Miasto</button>
+  </div>
+</div>
   <div class="d-flex flex-wrap">
     <div id="events">
       <div class="d-flex justify-content-center">
@@ -16,7 +22,7 @@
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for event in events %}
-          <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
+          <div onclick="location.href='/events/{{event.id}}';" class="{% if userLocation in event.location %}city{% else %}all{% endif %} events card text-center text-bg-secondary m-2" style="width: 18rem;">
               <div class="card-body">
                 <h5 class="card-title">{{event.title}}</h5>
                 <p class="card-text">{{event.description}}</p>
@@ -35,7 +41,7 @@
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for newss in news %}
-          <div onclick="location.href='/news/{{newss.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+          <div onclick="location.href='/news/{{newss.id}}';" class="{% if userLocation in newss.location %}city{% else %}all{% endif %} news card text-center text-bg-secondary m-2" style="width: 18rem;">
               <div class="card-body">
                 <h5 class="card-title">{{newss.title}}</h5>
                 <p class="card-text">{{newss.description}}</p>
@@ -54,7 +60,7 @@
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for job in jobs %}
-                <div onclick="location.href='/jobs/{{job.id}}';" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/jobs/{{job.id}}';" class="{% if userLocation in job.location %}city{% else %}all{% endif %} jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
                     <div class="card-body">
                       <h5 class="card-title">{{job.title}}</h5>
                       <p class="card-text">{{job.description}}</p>
@@ -64,4 +70,36 @@
       </div>
     </div>
   </div>
+  <script>
+    $(document).on('click', '#filter', function(e){
+      e.preventDefault()
+      filter = $("#filter")
+      if (filter.text() == "Wszystko"){
+        filter.text("Miasto") 
+      }else{
+        filter.text("Wszystko") 
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/filter/',
+        data: {
+          filter: filter.text(),
+          csrfmiddlewaretoken: '{{csrf_token}}',
+          action: 'post'
+        },
+        success: function(json){
+          if (json['result'] == "Wszystko"){
+            $(".city").show()
+            $(".all").show()
+          }else{
+            $(".city").show()
+            $(".all").hide()
+          }
+        },
+        error: function(error){
+          console.log(error)
+        }
+      });
+    });
+  </script>
 {% endblock %}

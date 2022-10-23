@@ -7,7 +7,10 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('map/', views.map, name='map'),
     path('home_list/', views.home_list, name='home_list'),
+
+    # Usage
     path('filter/', views.filter, name='filter'),
+    path('load_more/', views.loadMore, name='loadMore'),
 
     # Profile 
     path('profile/<str:nick>', views.profile, name='profile'),

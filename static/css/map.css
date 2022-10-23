@@ -1,10 +1,17 @@
 #map{
   width: 100%;
   height: calc(100vh - 56px);
-  display: none;
+  z-index: 1;
+}
+#accordion{
+  position: absolute;
+  right: 0px;
+  z-index: 999;
+  top: 15%;
+  margin-right: 8px;
 }
 #filter1, #filter2{
-  width: 110%;
+  width: 200px;
 }
 .object_title{
   text-decoration: none;
@@ -22,8 +29,8 @@
   text-align: center;
 }
 @media only screen and (max-width: 600px) {
-  #filter1{
-    width: 120%;
+  #accordion{
+    top: 15%;
   }
   .gm-style-iw-d{
     max-width: 70vw;

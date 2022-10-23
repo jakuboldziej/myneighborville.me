@@ -7,28 +7,93 @@
 {% endblock %}
 
 {% block main %}
-<form method="POST">
-  {% csrf_token %}
-  <div class="position-absolute start-50 top-50 translate-middle d-flex flex-column align-items-center justify-content-center gap-2">
-    <h4>Pokazuj znaczniki:</h4>
-    <input id="filter1" class="btn btn-success" value="Tylko z twojego miasta">
-    <input id="filter2" class="btn btn-success" value="Wszystkie">
+<div class="accordion" id="accordion">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Filtruj
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
+      <div class="accordion-body d-flex justify-content-center align-items-center flex-column gap-2">
+        Markery
+        <button id="filter1" class="btn btn-success">Tylko z twojego miasta</button>
+        <button id="filter2" class="btn btn-success">Wszystkie</button>
+      </div>
+    </div>
   </div>
-</form>
+</div>
 <div id="map"></div>
   <script type="text/javascript">
     let map;
     let markers = [];
-    class Marker {
-      constructor(location, title, content, icon) {
+    function initialize() {
+      {% for marker in cityMarkers %}
+      const {{marker.title}} = { lat: {{marker.latitude}}, lng: {{marker.longitude}} };
+      {% endfor %}
+      map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: {{userLocation}},
+      });
+
+      map.addListener("zoom_changed", () => {
+        if (map.getZoom() < 11){
+          setMapOnAll(null);
+          markers = [];
+        }else{
+          loadCityMarkers()
+        }
+      });
+
+      document.getElementById('filter1').addEventListener('click', loadCityMarkers);
+      document.getElementById('filter2').addEventListener('click', loadAllMarkers);
+      
+      loadCityMarkers();
+      function setMapOnAll(map){
+        for (let i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+      function loadAllMarkers(){
+        setMapOnAll(null);
+        markers = [];
+        {% for marker in allMarkers %}
+          {% if marker.title == userLocation %}
+          {% if marker.elements != 0 %}
+          addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
+          {% else %}
+          addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `<h2>Home</h2>`, "{{marker.icon|safe}}");
+          {% endif %}
+          {% elif marker.content != "<h2>Home</h2>" %}
+          addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+          {% else %}
+          {% endif %}
+        {% endfor %}
+        setMapOnAll(map);
+      }
+      function loadCityMarkers(){
+        setMapOnAll(null);
+        markers = [];
+        {% for marker in cityMarkers %}
+          {% if marker.title == userLocation %}
+            {% if marker.elements != 0 %}
+            addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
+            {% else %}
+            addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `<h2>Home</h2>`, "{{marker.icon|safe}}");
+            {% endif %}
+          {% elif marker.content != "<h2>Home</h2>" %}
+          addMarker({lat: {{marker.latitude}}, lng: {{marker.longitude}}}, `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+          {% endif %}
+        {% endfor %}
+        setMapOnAll(map);
+      }
+      function addMarker(position, content){
+        const marker = new google.maps.Marker({
+          position: position,
+          map,
+        });
         const infowindow = new google.maps.InfoWindow({
           content: content,
-        });
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: title,
-          // icon: icon
         });
         marker.addListener("click", () => {
           infowindow.open({
@@ -39,62 +104,9 @@
         });
         google.maps.event.addListener(map, "click", function(event) {
           infowindow.close();
-      });
+		    });
+        markers.push(marker);
       }
-    }
-    function initialize() {
-      //const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
-      {% for marker in allMarkers %}
-      const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
-      {% endfor %}
-      map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: {{userLocation}},
-      });
-      map.addListener("zoom_changed", () => {
-        // console.log(map.getZoom());
-        if (map.getZoom() < 11){
-          
-        }
-      });
-      const filter1 = document.getElementById('filter1')
-      const filter2 = document.getElementById('filter2')
-      function loadAllMarkers(){
-        {% for marker in allMarkers %}
-          {% if marker.title == userLocation %}
-          {% if marker.elements != 0 %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
-          {% else %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2>`, "{{marker.icon|safe}}");
-          {% endif %}
-          {% elif marker.content != "<h2>Home</h2>" %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
-          {% else %}
-          {% endif %}
-        {% endfor %}
-        filter1.style.display = 'none';        
-        filter2.style.display = 'none';
-        document.getElementById('map').style.display = 'block';
-      }
-      function loadCityMarkers(){
-        {% for marker in allMarkers %}
-          {% if marker.title == userLocation %}
-          {% if marker.elements != 0 %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
-          {% else %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2>`, "{{marker.icon|safe}}");
-          {% endif %}
-          {% elif marker.content != "<h2>Home</h2>" %}
-          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
-          {% else %}
-          {% endif %}
-        {% endfor %}
-        filter1.style.display = 'none';        
-        filter2.style.display = 'none';        
-        document.getElementById('map').style.display = 'block';
-      }
-      filter1.addEventListener('click', loadCityMarkers);
-      filter2.addEventListener('click', loadAllMarkers);
     }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=initialize"

@@ -19,7 +19,7 @@
             </span>
             <div id="lewy-content">
                 {% for event in userEvents %}
-                <div onclick="location.href='/events/{{event.id}}';" class="events card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/events/{{event.id}}';" id="events_{{ forloop.counter }}"class="events card text-center text-bg-secondary m-2 position-relative" style="width: 18rem; display:{% if forloop.counter > loadEvents %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
@@ -29,6 +29,9 @@
                     {% endif %}
                 </div>
                 {% endfor %}
+            </div>
+            <div style="position: absolute; bottom: -15px; left: 50%; transform: translate(-50%, -50%);">
+                <button id="loadMoreEvents" class="border-none">Load more...</button>
             </div>
         </div>
         <div id="prawy">
@@ -40,7 +43,7 @@
             </span>
             <div id="prawy-content">
                 {% for news in userNews %}
-                <div onclick="location.href='/news/{{news.id}}';" class="news card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/news/{{news.id}}';" id="news_{{ forloop.counter }}" class="news card text-center text-bg-secondary m-2" style="width: 18rem; display:{% if forloop.counter > loadNews %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
                       <h5 class="card-title">{{news.title}}</h5>
                       <p class="card-text">{{news.description}}</p>
@@ -50,6 +53,9 @@
                     {% endif %}
                 </div>
                 {% endfor %}
+            </div>
+            <div style="position: absolute; bottom: -15px; left: 50%; transform: translate(-50%, -50%);">
+                <button id="loadMoreNews" class="border-none">Load more...</button>
             </div>
         </div>
         <div id="dolny">
@@ -61,7 +67,7 @@
             </span>
             <div id="dolny-content">
                 {% for job in userJobs %}
-                <div onclick="location.href='/jobs/{{job.id}}';" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem;">
+                <div onclick="location.href='/jobs/{{job.id}}';" id="jobs_{{ forloop.counter }}" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem; display:{% if forloop.counter > loadJobs %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
                       <h5 class="card-title">{{job.title}}</h5>
                       <p class="card-text">{{job.description}}</p>
@@ -72,8 +78,74 @@
                 </div>
                 {% endfor %}
             </div>
+            <div style="position: absolute; bottom: -15px; left: 50%; transform: translate(-50%, -50%);">
+                <button id="loadMoreJobs" class="border-none">Load more...</button>
+            </div>
         </div>
     </div>
     <button id="back-to-top" onclick="topFunction()" class="btn btn-dark btn-lg back-to-top" role="button"><i class="fas fa-chevron-up"></i></button>
     <script src="{% static 'js/scroll-top.js' %}"></script>
+    <script>
+        $(document).on('click', '#loadMoreNews', function(e){
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: '/load_more/',
+                data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                    action: 'post',
+                    object: 'news',
+                },
+                success: function(json){
+                    console.log(json)
+                    $(".news").each(function(){
+                        const id = $(this).attr('id')
+                        if (id.split("_")[1] <= json['result']){
+                            $(this).show()
+                        }
+                    })
+                }
+            });
+        });
+        $(document).on('click', '#loadMoreEvents', function(e){
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: '/load_more/',
+                data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                    action: 'post',
+                    object: 'events',
+                },
+                success: function(json){
+                    $(".events").each(function(){
+                        const id = $(this).attr('id')
+                        if (id.split("_")[1] < json['result']){
+                            $(this).show()
+                        }
+                    })
+                }
+            });
+        });
+        $(document).on('click', '#loadMoreJobs', function(e){
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: '/load_more/',
+                data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                    action: 'post',
+                    object: 'jobs',
+                },
+                success: function(json){
+                    $(".jobs").each(function(){
+                        const id = $(this).attr('id')
+                        if (id.split("_")[1] < json['result']){
+                            $(this).show()
+                        }
+                    })
+                }
+            });
+        });
+    </script>
 {% endblock %}
