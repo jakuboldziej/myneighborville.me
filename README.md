@@ -2,7 +2,7 @@ https://myneighborville.me
 
 Aplikację opracowali: Jakub Ołdziejewski, Krzysztof Wiśniewski, Rafał Popiel ze szkoły Elektroniczne Zakłady Naukowe.
 
-Użyte usługi i technologie:
+Użyte usługi i technologie:<br>
 Python - Django<br>
 JavaScript - Vanilla, Ajax, JQuery<br>
 Linode - Ubuntu Server 18.04<br>
