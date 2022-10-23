@@ -9,6 +9,8 @@ from django.conf import settings
 
 import datetime
 
+from matplotlib.dates import WE
+
 from .models import WebsiteUser, Event, News, Marker, Job
 
 # 404 Handling
@@ -40,21 +42,20 @@ def index(request):
 @login_required
 def map(request):
     api_key = settings.GOOGLE_API_KEY
-    userLocation = WebsiteUser.objects.get(id=request.user.id).location
-    userCity = userLocation.split(', ')[0].replace(' ', '_')
-    userLocation = userLocation.replace(" ", "_")
+    userLocationRaw = WebsiteUser.objects.get(id=request.user.id).location
+    userCity = userLocationRaw.split(', ')[0].replace(' ', '_')
+    userLocation = userLocationRaw.replace(" ", "_")
     userLocation = userLocation.replace(",", "")
-    userHomeMarker = Marker.objects.get(title=userLocation)
     markers = Marker.objects.all()
-    allMarkers = [marker for marker in markers if marker.type != "Home"]
-    cityMarkers = [marker for marker in markers if userCity in marker.title and marker.type != "Home"]
-
+    allMarkers = [marker for marker in markers]
+    cityMarkers = [marker for marker in markers if userCity in marker.title]
     context = {
+        'markers': markers,
         'allMarkers': allMarkers,
         'cityMarkers': cityMarkers,
         'api_key': api_key,
         'userLocation': userLocation,
-        'userHomeMarker': userHomeMarker,
+        'userLocationRaw': userLocationRaw,
     }
     return render(request, 'map.html', context)
 
@@ -291,35 +292,26 @@ def addEvent(request):
         except:
             checkMarker = None
         if checkMarker:
-            markerType = checkMarker.type
-            object = None
-            objectType = None
-            if checkMarker.jobs.count() != 0:
-                object = checkMarker.jobs.first()
-                objectType = "jobs"
-            elif checkMarker.events.count() != 0:
-                object = checkMarker.events.first()
-                objectType = "events"
-            elif checkMarker.news.count() != 0:
-                object = checkMarker.news.first()
-                objectType = "news"
-
-            if checkMarker.elements() > 1:
-                if markerType != "Home":
-                    checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
-            else:
-                checkMarker.content = ''
-
-                if markerType == "Home":
-                    checkMarker.content += "<h2>Home</h2>"
-                    checkMarker.content += '<a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                    checkMarker.content += '<a class="object_link" href="/events/' + str(newEvent.id) + '">' + newEvent.title + '</a>\n</br>'
-                    checkMarker.type = "Multiple"
-                    checkMarker.icon = ""
-
             checkMarker.events.add(newEvent)
+            if checkMarker.elements() > 1:
+                checkMarker.content = ''
+                for n in checkMarker.news.all():
+                    checkMarker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+                for event in checkMarker.events.all():
+                    checkMarker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+                for job in checkMarker.jobs.all():
+                    checkMarker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+                checkMarker.type = "Multiple"
+                
+            else:
+                checkMarker.content = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/events/{newEvent.id}'><h2>{newEvent.title}</h2></a></br>
+                    <h3 class="object_description">{newEvent.description}</h3>
+                    </div>
+                    """
+                checkMarker.type = "Event"
+
             checkMarker.save()
             newEvent.markerId = checkMarker.id
             newEvent.save()
@@ -360,68 +352,59 @@ def addEvent(request):
 def deleteEvent(request, id):
     event = Event.objects.get(id=id)
     marker = Marker.objects.get(id=event.markerId)
-    markerType = marker.type
+    marker.events.get(id=id).delete()
+    event.delete()
     markerElements = marker.elements()
-    markerElements -= 1
     marker.save()
 
-    if event.userId == request.user.id:
-        newsLinia = '/events/' + str(event.id)
-        linie = marker.content.split("</br>")
-        for i, linia in enumerate(linie):
-            if newsLinia in linia:
-                linie.pop(i)
-        event.delete()
-        
-        result = ''
-        if markerElements == 1:
-            object = None
-            objectType = None
-            if marker.jobs.count() == 1:
-                object = marker.jobs.first()
-                objectType = "jobs"
-            elif marker.events.count() == 1:
-                object = marker.events.first()
-                objectType = "events"
-            elif marker.news.count() == 1:
-                object = marker.news.first()
-                objectType = "news"
-            
-            if markerType == "Home":
-                    if marker.elements() != 0:
-                        result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                    else:
-                        result = "<h2>Home</h2>"
-            else:
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
-                    <h3 class="object_description">{object.description}</h3>
-                    </div>
-                    """
-                marker.type = objectType.capitalize()
-        else:
-            if markerType != "Home":
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
-            else:
-                if marker.elements() != 0:
-                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    result = "<h2>Home</h2>"
-
-        if markerElements == 0 and markerType != "Home":
-            marker.delete()
-        else:
-            marker.content = result
+    if marker:
+        if markerElements > 1:
+            marker.content = ''
+            if marker.news.all().count() != 0:
+                for n in marker.news.all():
+                    marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            if marker.events.all().count() != 0:
+                for event in marker.events.all():
+                    marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            if marker.jobs.all().count() != 0:
+                for job in marker.jobs.all():
+                    marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
             marker.save()
-
-        return redirect('/profile/' + request.user.username)
-    else:
-        return redirect('/')
+            
+        elif markerElements == 1:
+            if marker.news.all().count() == 1:
+                markerObject = marker.news.first()
+                objectType = "news"
+            if marker.events.all().count() == 1:
+                markerObject = marker.events.first()
+                objectType = "events"
+            if marker.jobs.all().count() == 1:
+                markerObject = marker.jobs.first()
+                objectType = "jobs"
+            
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{markerObject.id}'><h2>{markerObject.title}</h2></a></br>
+                <h3 class="object_description">{markerObject.description}</h3>
+                </div>
+                """
+            marker.type = objectType.capitalize()
+            marker.save()
+        else:
+            delete = True
+            websiteUser = WebsiteUser.objects.all()
+            for user in websiteUser:
+                if user.location.replace(" ", "_").replace(",", "") == marker.title:
+                        delete = False
+            if delete:
+                    marker.delete()
+            else:
+                marker.content = "<h2>Home</h2>"
+                marker.type = "Home"
+                marker.save()
+    
+    return redirect('/profile/' + request.user.username)
 
 @login_required
 def editEvent(request, id):
@@ -443,31 +426,25 @@ def editEvent(request, id):
         event.dateEnd = dateEnd
         event.save()
 
-        markerType = marker.type
-        result = ''
-        if marker.elements() == 1:
-            if markerType != "Home":
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/events/{event.id}'><h2>{event.title}</h2></a></br>
-                    <h3 class="object_description">{event.description}</h3>
-                    </div>
-                    """
+        if marker.elements() > 1:
+            marker.content = ''
+            for n in marker.news.all():
+                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            for event in marker.events.all():
+                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            for job in marker.jobs.all():
+                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
+            
         else:
-            if markerType != "Home":
-                newsLinia = '/events/' + str(event.id)
-                linie = marker.content.split("</br>")
-                for i, linia in enumerate(linie):
-                    if newsLinia in linia:
-                        linie[i] = '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n'
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/events/{event.id}'><h2>{event.title}</h2></a></br>
+                <h3 class="object_description">{event.description}</h3>
+                </div>
+                """
+            marker.type = "Event"
 
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
-
-        marker.content = result
         marker.save()
         return redirect('/profile/' + request.user.username)
     else:
@@ -575,35 +552,26 @@ def addJob(request):
         except:
             checkMarker = None
         if checkMarker:
-            markerType = checkMarker.type
-            object = None
-            objectType = None
-            if checkMarker.jobs.count() != 0:
-                object = checkMarker.jobs.first()
-                objectType = "jobs"
-            elif checkMarker.events.count() != 0:
-                object = checkMarker.events.first()
-                objectType = "events"
-            elif checkMarker.news.count() != 0:
-                object = checkMarker.news.first()
-                objectType = "news"
-
-            if checkMarker.elements() > 1:
-                if markerType != "Home":
-                    checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
-            else:
-                checkMarker.content = ''
-
-                if markerType == "Home":
-                    checkMarker.content += "<h2>Home</h2>"
-                    checkMarker.content += '<a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                    checkMarker.content += '<a class="object_link" href="/jobs/' + str(newJob.id) + '">' + newJob.title + '</a>\n</br>'
-                    checkMarker.type = "Multiple"
-                    checkMarker.icon = ""
-
             checkMarker.jobs.add(newJob)
+            if checkMarker.elements() > 1:
+                checkMarker.content = ''
+                for n in checkMarker.news.all():
+                    checkMarker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+                for event in checkMarker.events.all():
+                    checkMarker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+                for job in checkMarker.jobs.all():
+                    checkMarker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+                checkMarker.type = "Multiple"
+                
+            else:
+                checkMarker.content = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/jobs/{newJob.id}'><h2>{newJob.title}</h2></a></br>
+                    <h3 class="object_description">{newJob.description}</h3>
+                    </div>
+                    """
+                checkMarker.type = "Job"
+
             checkMarker.save()
 
             newJob.markerId = checkMarker.id
@@ -647,70 +615,59 @@ def addJob(request):
 def deleteJob(request, id):
     job = Job.objects.get(id=id)
     marker = Marker.objects.get(id=job.markerId)
-    markerType = marker.type
+    marker.jobs.get(id=id).delete()
+    job.delete()
     markerElements = marker.elements()
-    markerElements -= 1
     marker.save()
-    objectType = None
 
-    if job.userId == request.user.id:
-        newsLinia = '/jobs/' + str(job.id)
-        # jeżel linie jest None usuń też markera
-        linie = marker.content.split("</br>")
-        for i, linia in enumerate(linie):
-            if newsLinia in linia:
-                linie.pop(i)
-        job.delete()
-        
-        result = ''
-        if markerElements == 1:
-            result = ''
-            object = None
-            if marker.jobs.count() == 1:
-                object = marker.jobs.first()
-                objectType = "jobs"
-            elif marker.events.count() == 1:
-                object = marker.events.first()
-                objectType = "events"
-            elif marker.news.count() == 1:
-                object = marker.news.first()
-                objectType = "news"
-                
-            if markerType == "Home":
-                    if marker.elements() != 0:
-                        result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                    else:
-                        result = "<h2>Home</h2>"
-            else:
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
-                    <h3 class="object_description">{object.description}</h3>
-                    </div>
-                    """
-                marker.type = objectType.capitalize()
-                
-        else:
-            if markerType != "Home":
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
-            else:
-                if marker.elements() != 0:
-                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    result = "<h2>Home</h2>"
-
-        if markerElements == 0 and markerType != "Home":
-            marker.delete()
-        else:
-            marker.content = result
+    if marker:
+        if markerElements > 1:
+            marker.content = ''
+            if marker.news.all().count() != 0:
+                for n in marker.news.all():
+                    marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            if marker.events.all().count() != 0:
+                for event in marker.events.all():
+                    marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            if marker.jobs.all().count() != 0:
+                for job in marker.jobs.all():
+                    marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
             marker.save()
-        return redirect('/profile/' + request.user.username)
-    else:
-        return redirect('/')
+            
+        elif markerElements == 1:
+            if marker.news.all().count() == 1:
+                markerObject = marker.news.first()
+                objectType = "news"
+            if marker.events.all().count() == 1:
+                markerObject = marker.events.first()
+                objectType = "events"
+            if marker.jobs.all().count() == 1:
+                markerObject = marker.jobs.first()
+                objectType = "jobs"
+            
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{markerObject.id}'><h2>{markerObject.title}</h2></a></br>
+                <h3 class="object_description">{markerObject.description}</h3>
+                </div>
+                """
+            marker.type = objectType.capitalize()
+            marker.save()
+        else:
+            delete = True
+            websiteUser = WebsiteUser.objects.all()
+            for user in websiteUser:
+                if user.location.replace(" ", "_").replace(",", "") == marker.title:
+                    delete = False
+            if delete:
+                marker.delete()
+            else:
+                marker.content = "<h2>Home</h2>"
+                marker.type = "Home"
+                marker.save()
+    
+    return redirect('/profile/' + request.user.username)
 
 @login_required
 def editJob(request, id):
@@ -724,33 +681,26 @@ def editJob(request, id):
         job.description = description
         job.save()
 
-        markerType = marker.type
-        result = ''
-        if marker.elements() == 1:
-            if markerType != "Home":
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/jobs/{job.id}'><h2>{job.title}</h2></a></br>
-                    <h3 class="object_description">{job.description}</h3>
-                    </div>
-                    """
+        if marker.elements() > 1:
+            marker.content = ''
+            for n in marker.news.all():
+                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            for event in marker.events.all():
+                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            for job in marker.jobs.all():
+                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
+            
         else:
-            if markerType != "Home":
-                newsLinia = '/jobs/' + str(job.id)
-                linie = marker.content.split("</br>")
-                for i, linia in enumerate(linie):
-                    if newsLinia in linia:
-                        linie[i] = '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n'
-
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/events/{job.id}'><h2>{job.title}</h2></a></br>
+                <h3 class="object_description">{job.description}</h3>
+                </div>
+                """
+            marker.type = "Job"
                         
-        marker.content = result
         marker.save()
-
         return redirect('/profile/' + request.user.username)
     else:
         context = {
@@ -851,35 +801,26 @@ def addNews(request):
         except:
             checkMarker = None
         if checkMarker:
-            markerType = checkMarker.type
-            object = None
-            objectType = None
-            if checkMarker.jobs.count() != 0:
-                object = checkMarker.jobs.first()
-                objectType = "jobs"
-            elif checkMarker.events.count() != 0:
-                object = checkMarker.events.first()
-                objectType = "events"
-            elif checkMarker.news.count() != 0:
-                object = checkMarker.news.first()
-                objectType = "news"
-
-            if checkMarker.elements() > 1:
-                if markerType != "Home":
-                    checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
-            else:
-                checkMarker.content = ''
-
-                if markerType == "Home":
-                    checkMarker.content += "<h2>Home</h2>"
-                    checkMarker.content += '<a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    checkMarker.content += f'<a class="object_link" href="/{objectType}/' + str(object.id) + '">' + object.title + '</a>\n</br>'
-                    checkMarker.content += '<a class="object_link" href="/news/' + str(newNews.id) + '">' + newNews.title + '</a>\n</br>'
-                    checkMarker.type = "Multiple"
-                    checkMarker.icon = ""
-
             checkMarker.news.add(newNews)
+            if checkMarker.elements() > 1:
+                checkMarker.content = ''
+                for n in checkMarker.news.all():
+                    checkMarker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+                for event in checkMarker.events.all():
+                    checkMarker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+                for job in checkMarker.jobs.all():
+                    checkMarker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+                checkMarker.type = "Multiple"
+                
+            else:
+                checkMarker.content = f"""
+                    <div class="text-center">
+                    <a class="object_title" href='/news/{newNews.id}'><h2>{newNews.title}</h2></a></br>
+                    <h3 class="object_description">{newNews.description}</h3>
+                    </div>
+                    """
+                checkMarker.type = "News"
+
             checkMarker.save()
 
             newNews.markerId = checkMarker.id
@@ -922,66 +863,59 @@ def addNews(request):
 def deleteNews(request, id):
     news = News.objects.get(id=id)
     marker = Marker.objects.get(id=news.markerId)
-    markerType = marker.type
+    marker.news.get(id=id).delete()
+    news.delete()
     markerElements = marker.elements()
-    markerElements -= 1
     marker.save()
-    objectType = None
 
-    if news.userId == request.user.id:
-        newsLinia = '/news/' + str(news.id)
-        linie = marker.content.split("</br>")
-        for i, linia in enumerate(linie):
-            if newsLinia in linia:
-                linie.pop(i)
-        news.delete()
-        
-        result = ''
-        if markerElements == 1:
-            result = ''
-            object = None
-            if marker.jobs.count() == 1:
-                object = marker.jobs.first()
-                objectType = "jobs"
-            elif marker.events.count() == 1:
-                object = marker.events.first()
-                objectType = "events"
-            elif marker.news.count() == 1:
-                object = marker.news.first()
-                objectType = "news"
-
-            if markerType == "Home":
-                if marker.elements() != 0:
-                    result = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
-                else:
-                    result = "<h2>Home</h2>"
-            else:
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
-                    <h3 class="object_description">{object.description}</h3>
-                    </div>
-                    """
-                marker.type = objectType.capitalize()
-        else:
-            if markerType != "Home":
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
-            else:
-                result = "<h2>Home</h2>"
-
-        if markerElements == 0 and markerType != "Home":
-            pass
-            marker.delete()
-        else:
-            marker.content = result
+    if marker:
+        if markerElements > 1:
+            marker.content = ''
+            if marker.news.all().count() != 0:
+                for n in marker.news.all():
+                    marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            if marker.events.all().count() != 0:
+                for event in marker.events.all():
+                    marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            if marker.jobs.all().count() != 0:
+                for job in marker.jobs.all():
+                    marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
             marker.save()
-        return redirect('/profile/' + request.user.username)
-    else:
-        return redirect('/')
+            
+        elif markerElements == 1:
+            if marker.news.all().count() == 1:
+                markerObject = marker.news.first()
+                objectType = "news"
+            if marker.events.all().count() == 1:
+                markerObject = marker.events.first()
+                objectType = "events"
+            if marker.jobs.all().count() == 1:
+                markerObject = marker.jobs.first()
+                objectType = "jobs"
+            
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/{objectType}/{markerObject.id}'><h2>{markerObject.title}</h2></a></br>
+                <h3 class="object_description">{markerObject.description}</h3>
+                </div>
+                """
+            marker.type = objectType.capitalize()
+            marker.save()
+        else:
+            delete = True
+            websiteUser = WebsiteUser.objects.all()
+            for user in websiteUser:
+                if user.location.replace(" ", "_").replace(",", "") == marker.title:
+                    delete = False
+            if delete:
+                marker.delete()
+            else:
+                marker.content = "<h2>Home</h2>"
+                marker.type = "Home"
+                marker.save()
+    
+    return redirect('/profile/' + request.user.username)
 
 @login_required
 def editNews(request, id):
@@ -995,33 +929,26 @@ def editNews(request, id):
         news.description = description
         news.save()
 
-        markerType = marker.type
-        result = ''
-        if marker.elements() == 1:
-            if markerType != "Home":
-                result = f"""
-                    <div class="text-center">
-                    <a class="object_title" href='/news/{news.id}'><h2>{news.title}</h2></a></br>
-                    <h3 class="object_description">{news.description}</h3>
-                    </div>
-                    """
+        if marker.elements() > 1:
+            marker.content = ''
+            for n in marker.news.all():
+                marker.content += '<a class="object_link" href="/news/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+            for event in marker.events.all():
+                marker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+            for job in marker.jobs.all():
+                marker.content += '<a class="object_link" href="/jobs/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+            marker.type = "Multiple"
+            
         else:
-            if markerType != "Home":
-                newsLinia = '/news/' + str(news.id)
-                linie = marker.content.split("</br>")
-                for i, linia in enumerate(linie):
-                    if newsLinia in linia:
-                        linie[i] = '<a class="object_link" href="/news/' + str(news.id) + '">' + news.title + '</a>\n'
+            marker.content = f"""
+                <div class="text-center">
+                <a class="object_title" href='/events/{news.id}'><h2>{news.title}</h2></a></br>
+                <h3 class="object_description">{news.description}</h3>
+                </div>
+                """
+            marker.type = "News"
 
-                for i, linia in enumerate(linie):
-                    if i == len(linie) - 1:
-                        result += linia
-                    else:
-                        result += linia + '</br>'
-
-        marker.content = result
         marker.save()
-
         return redirect('/profile/' + request.user.username)
     else:
         context = {
@@ -1070,6 +997,12 @@ def register(request):
             lng = locSplit[1]
             address = address.replace(" ", "_").replace(',', '')
             try:
+                marker = Marker.objects.get(title=address)
+            except:
+                marker = None
+            if marker:
+                return redirect("/login")
+            else:
                 newMarker = Marker.objects.create(
                     latitude=lat,
                     longitude=lng,
@@ -1079,8 +1012,7 @@ def register(request):
                     icon="/static/images/Home_marker.png"
                 )
                 newMarker.save()
-            except:
-                _ = 0
+                
             return redirect("/login")
         else:
             api_key = settings.GOOGLE_API_KEY

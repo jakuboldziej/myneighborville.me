@@ -30,6 +30,11 @@
 #count{
   position: absolute;
 }
+#btnModal{
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  color: black;
+}
 </style>
 {% endblock %}
 
@@ -55,7 +60,7 @@
       <label class="form-label">Koniec</label>
       <input type="datetime-local" name="dateEnd" class="form-control" required>
     </div>
-    <label class="form-label">Lokalizacja</label>
+    <a href="#" id="btnModal" data-bs-toggle="modal" class="form-label text-decoration-dotted" data-bs-target="#modal1">Lokalizacja</a>
       <div class="input-group mb-3">
         <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
         <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Znajdź">
@@ -63,6 +68,24 @@
       </div>
     <button id="submit" type="submit" class="btn btn-success" disabled>Dodaj</button>
   </form>
+</div>
+<div class="modal fade" id="modal1" tabindex="-1" aria-labelledby="modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modal1Label">Przewodnik jak wprowadzać lokalizacje</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5>Możesz wpisać pełną lokalizację lub tylko nazwę miasta.</h5>
+        <h5>Proszę wpisywać lokalizację następująco: [Miasto], [Nazwa ulicy] [Numer domu] lub po prostu [Miasto].</h5>
+        <h5>Przykład: Wrocław, Sucha 1</h5>
+        <h5>Lokalizacja jest potrzebna aby inni użytkownicy mogli zobaczyć twoje wydarzenia, aktualności oraz oferty pracy.</h5>
+        <h5>Lokalizacja wydarzenia będzie publicznie dostępna.</h5>
+        <h5>Uważnie sprawdź poprawność wpisanej przez ciebie lokalizacji.</h5>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="map"></div>
   <script>
@@ -107,8 +130,10 @@
     src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
 </script>
 <script>
-  document.getElementById('description').onkeyup = function () {
-    document.getElementById('count').innerHTML = "Characters left: " + (500 - this.value.length);
-  };
+  $(document).on('click', '#button-addon', function(e){
+    let address = $("#address").val()
+    console.log(address.split(", ")[0])
+    console.log("{{userLocation}}".split("_")[0])
+  }); 
 </script>
 {% endblock %}

@@ -11,9 +11,9 @@
             <h2>{{currentUser.user.username}}</h2>
         </div>
         <div id="lewy">
-            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
-                <a class="btn btn-success" href="/add_event">Dodaj</a>
+                <a class="btnadd btn btn-success" href="/add_event">Dodaj</a>
                 {% endif %}
                 <h1>Wydarzenia</h1>
             </span>
@@ -32,11 +32,11 @@
             </div>
         </div>
         <div id="prawy">
-            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
-                <a class="btn btn-success" href="/add_news">Dodaj</a>
+                <a class="btnadd btn btn-success" href="/add_news">Dodaj</a>
                 {% endif %}
-                <h1>Wiadomości</h1>
+                <h1>Aktualności</h1>
             </span>
             <div id="prawy-content">
                 {% for news in userNews %}
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div id="dolny">
-            <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
                 <a class="btn btn-success" href="/add_job">Dodaj</a>
                 {% endif %}

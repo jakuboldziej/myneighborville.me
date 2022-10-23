@@ -37,10 +37,13 @@
             shouldFocus: false,
           });
         });
+        google.maps.event.addListener(map, "click", function(event) {
+          infowindow.close();
+      });
       }
     }
     function initialize() {
-      const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
+      //const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
       {% for marker in allMarkers %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
       {% endfor %}
@@ -57,16 +60,34 @@
       const filter1 = document.getElementById('filter1')
       const filter2 = document.getElementById('filter2')
       function loadAllMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`, "{{userHomeMarker.icon|safe}}");
         {% for marker in allMarkers %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+          {% if marker.title == userLocation %}
+          {% if marker.elements != 0 %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
+          {% else %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2>`, "{{marker.icon|safe}}");
+          {% endif %}
+          {% elif marker.content != "<h2>Home</h2>" %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+          {% else %}
+          {% endif %}
         {% endfor %}
+        filter1.style.display = 'none';        
+        filter2.style.display = 'none';
         document.getElementById('map').style.display = 'block';
       }
       function loadCityMarkers(){
-        const marker{{userHomeMarker.id}} = new Marker({{userHomeMarker.title}}, "{{userHomeMarker.title}}", `{{userHomeMarker.content|safe}}`, "{{userHomeMarker.icon|safe}}");
-        {% for marker in cityMarkers %}
-        const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+        {% for marker in allMarkers %}
+          {% if marker.title == userLocation %}
+          {% if marker.elements != 0 %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>`, "{{marker.icon|safe}}");
+          {% else %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `<h2>Home</h2>`, "{{marker.icon|safe}}");
+          {% endif %}
+          {% elif marker.content != "<h2>Home</h2>" %}
+          const marker{{marker.id}} = new Marker({{marker.title}}, "{{marker.title}}", `{{marker.content|safe}}`, "{{marker.icon|safe}}");
+          {% else %}
+          {% endif %}
         {% endfor %}
         filter1.style.display = 'none';        
         filter2.style.display = 'none';        
