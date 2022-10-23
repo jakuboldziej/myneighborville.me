@@ -3,11 +3,11 @@ https://myneighborville.me
 Aplikację opracowali: Jakub Ołdziejewski, Krzysztof Wiśniewski, Rafał Popiel ze szkoły Elektroniczne Zakłady Naukowe.
 
 Użyte usługi i technologie:
-Python - Django
-JavaScript - Vanilla, Ajax, JQuery
-Linode - Ubuntu Server 18.04
-Namecheap - myneighborville.me , SSL
-Google - Maps Platform API
+Python - Django<br>
+JavaScript - Vanilla, Ajax, JQuery<br>
+Linode - Ubuntu Server 18.04<br>
+Namecheap - myneighborville.me , SSL<br>
+Google - Maps Platform API<br>
 
 Lokalna instalacja Windows 
 1. Zainstaluj git i sklonuj repozytorium
