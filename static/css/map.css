@@ -6,11 +6,6 @@
 #filter1, #filter2{
   width: 110%;
 }
-@media only screen and (max-width: 600px) {
-  #filter1{
-    width: 120%;
-  }
-}
 .object_title{
   text-decoration: none;
 }
@@ -25,4 +20,12 @@
   overflow-wrap: break-word;
   text-overflow: ellipsis;
   text-align: center;
+}
+@media only screen and (max-width: 600px) {
+  #filter1{
+    width: 120%;
+  }
+  .gm-style-iw-d{
+    max-width: 70vw;
+  }
 }

@@ -23,16 +23,16 @@
         <div class="collapse navbar-collapse" id="navbarText">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/map">Map</a>
+              <a class="nav-link" href="/map">Mapa</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/news">News</a>
+              <a class="nav-link" href="/news">Wiadomości</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/events">Events</a>
+              <a class="nav-link" href="/events">Wydarzenia</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/jobs">Jobs</a>
+              <a class="nav-link" href="/jobs">Prace</a>
             </li>
           </ul>
           <span class="navbar-text">
@@ -40,13 +40,13 @@
             <div id="dropdown" class="position-relative">
               <button id="username" onclick="showPopUp()">{{user.username}}</button>
               <div id="userPopUp">
-                <a class="text-decoration-none link-light" href="/profile/{{user.username}}"><h4>Profile</h4></a>
-                <a class="text-decoration-none link-light" href="/profile/settings/{{user.username}}"><h4>Settings</h4></a>
-                <a class="text-decoration-none link-danger" href="/logout"><h5>Log Out</h5></a>
+                <a class="text-decoration-none link-light" href="/profile/{{user.username}}"><h4>Profil</h4></a>
+                <a class="text-decoration-none link-light" href="/profile/settings/{{user.username}}"><h4>Ustawienia</h4></a>
+                <a class="text-decoration-none link-danger" href="/logout"><h5>Wyloguj się</h5></a>
               </div>
             </div>
             {% else %}
-            <a class="nav-link" href="/login">Log In</a>
+            <a class="nav-link" href="/login">Zaloguj się</a>
             {% endif %}
             {% if user.is_staff %}
           </span>

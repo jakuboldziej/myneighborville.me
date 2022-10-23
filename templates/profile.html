@@ -13,9 +13,9 @@
         <div id="lewy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                 {% if request.user.id == currentUser.id %}
-                <a class="btn btn-success" href="/add_event">Add</a>
+                <a class="btn btn-success" href="/add_event">Dodaj</a>
                 {% endif %}
-                <h1>Events</h1>
+                <h1>Wydarzenia</h1>
             </span>
             <div id="lewy-content">
                 {% for event in userEvents %}
@@ -25,7 +25,7 @@
                       <p class="card-text">{{event.description}}</p>
                     </div>
                     {% if request.user.id == event.userId %}
-                    <a href="/events/edit_event/{{event.id}}" class="btnedit btn btn-success">Edit</a>
+                    <a href="/events/edit_event/{{event.id}}" class="btnedit btn btn-success">Edytuj</a>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -34,9 +34,9 @@
         <div id="prawy">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                 {% if request.user.id == currentUser.id %}
-                <a class="btn btn-success" href="/add_news">Add</a>
+                <a class="btn btn-success" href="/add_news">Dodaj</a>
                 {% endif %}
-                <h1>News</h1>
+                <h1>Wiadomości</h1>
             </span>
             <div id="prawy-content">
                 {% for news in userNews %}
@@ -46,7 +46,7 @@
                       <p class="card-text">{{news.description}}</p>
                     </div>
                     {% if request.user.id == news.userId %}
-                    <a href="/news/edit_news/{{news.id}}" class="btnedit btn btn-success">Edit</a>
+                    <a href="/news/edit_news/{{news.id}}" class="btnedit btn btn-success">Edytuj</a>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -55,9 +55,9 @@
         <div id="dolny">
             <span style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                 {% if request.user.id == currentUser.id %}
-                <a class="btn btn-success" href="/add_job">Add</a>
+                <a class="btn btn-success" href="/add_job">Dodaj</a>
                 {% endif %}
-                <h1>Jobs</h1>
+                <h1>Oferty pracy</h1>
             </span>
             <div id="dolny-content">
                 {% for job in userJobs %}
@@ -67,7 +67,7 @@
                       <p class="card-text">{{job.description}}</p>
                     </div>
                     {% if job.userId == request.user.id %}
-                    <a href="/jobs/edit_job/{{job.id}}" class="btnedit btn btn-success">Edit</a>
+                    <a href="/jobs/edit_job/{{job.id}}" class="btnedit btn btn-success">Edytuj</a>
                     {% endif %}
                 </div>
                 {% endfor %}

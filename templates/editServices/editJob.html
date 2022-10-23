@@ -6,20 +6,20 @@
 
 {% block main %}
 <span class="d-flex align-items-center justify-content-center">
-    <h1>Edit Job</h1>
+    <h1>Edytuj ofertę pracy</h1>
 </span>
 <form method="POST">
 {% csrf_token %}
 <div class="d-flex p-2 justify-content-center align-items-center flex-column gap-2">
         <div class="card text-center text-bg-secondary m-2" style="width: 100%;">
             <div class="card-body d-flex justify-content-center align-items-center flex-column gap-2">
-                <h3>Title: <input class="form-control text-center" type="text" name="title" value="{{job.title}}"></h3>
-                <h3>Description: <textarea class="form-control" type="text" name="description" style="width: 270px;">{{job.description}}</textarea></h3>
+                <h3>Tytuł: <input class="form-control text-center" type="text" name="title" value="{{job.title}}"></h3>
+                <h3>Opis: <textarea class="form-control" type="text" name="description" style="width: 270px;">{{job.description}}</textarea></h3>
                 <div class="accordion" id="accordionExample" style="width: 200px;">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                          Users - {{job.people.count}}
+                          Użytkownicy - {{job.people.count}}
                         </button>
                       </h2>
                       <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -27,7 +27,7 @@
                             {% for user in job.people.all %}
                             <ul class="list-group">
                                 <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a> - <a class="text-decoration-none" href="mailto: {{user.user.email}}">{{user.user.email}}</a><a class="text-decoration-none" href="mailto: {{user.user.email}}">{{user.user.email}}</a></li>
-                                <a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
+                                <a href="/delete_user_from_job/{{job.id}}/{{user.user.id}}" class="btn btn-danger">Usuń</a>
                             </ul>
                             {% endfor %}
                         </div>
@@ -36,8 +36,8 @@
                 </div>
             </div>
         </div>
-        <input type="submit" class="btn btn-success" value="Save">
-        <a href="/delete_job/{{job.id}}" type="button" class="btn btn-danger">Delete</a>
+        <input type="submit" class="btn btn-success" value="Zapisz">
+        <a href="/delete_job/{{job.id}}" type="button" class="btn btn-danger">Usuń</a>
     </div>
 </form>
 {% endblock %}

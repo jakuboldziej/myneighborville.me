@@ -5,17 +5,32 @@
 <style>
   .person_count{
     position: absolute;
-    bottom: -5px;
+    bottom: -8px;
     left: 2px;
     opacity: 0.5;
     color: black;
   }
   .location{
     position: absolute;
-    bottom: -5px;
+    top: -5px;
     right: 4px;
     opacity: 0.5;
     color: black;
+  }
+  @media only screen and (max-width: 600px) {
+    .location{
+      position: absolute;
+      top: -5px;
+      left: 4px;
+      opacity: 0.5;
+      color: black;
+      width: 355px;
+      overflow: hidden;
+      white-space:nowrap;
+      text-overflow: ellipsis;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
   }
 </style>
 {% endblock %}
@@ -28,9 +43,9 @@
       <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
           <h3 class="border-bottom">{{event.description}}</h3>
-          <h3>Start Date: {{event.dateStart}}</h3>
-          <h3>Start Date: {{event.dateEnd}}</h3>
-          <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
+          <h3>Rozpoczęcie: {{event.dateStart}}</h3>
+          <h3>Zakończenie: {{event.dateEnd}}</h3>
+          <h5>Stworzony przez: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
           <h5 class="person_count">
             {% if user.username != owner.user.username %}
             <button id="submit" type="submit" style="border: none; background: none;" class="text-decoration-none">
@@ -45,9 +60,19 @@
             {% endif %}
             <span id="counter">{{event.participants.count}}</span>
           </h5>
-          <h5 class="location">Location: {{event.location}}</h5>
+          <h5 class="location">Lokalizacja: <a id="btnModal" data-bs-toggle="modal" data-bs-target="#exampleModal">{{event.location}}</a></h5>
         </div>
       </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{event.location}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   $(document).on('click', '#submit', function(e){
@@ -63,7 +88,6 @@
       success: function(json){
         document.getElementById("counter").innerHTML = json['result']
         if (json['participating']){
-          console.log($("i"))
           $("#image").attr('src', '{% static "images/star-filled.png" %}')
         }else{
           $("#image").attr('src', '{% static "images/star.png" %}')

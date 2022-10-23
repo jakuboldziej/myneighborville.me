@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Home Info{% endblock %}
+{% block title %}Główna{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
@@ -8,10 +8,11 @@
 <div class="d-flex flex-wrap">
     <div id="events">
       <div class="d-flex justify-content-center">
-        <h1 class="text-dark">Home 
-          <a href="/events" class="link-secondary text-decoration-none position-relative">Events
+        <h1 class="text-dark">
+          <a href="/events" class="link-secondary text-decoration-none position-relative">Wydarzenia
             <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if eventsCount > 99 %}99+{%else%}{{eventsCount}}{%endif%}</span>
           </a>
+          Zamieszkania
         </h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
@@ -27,10 +28,11 @@
     </div>
     <div id="news">
       <div class="d-flex justify-content-center">
-        <h1>Home 
-          <a href="/news" class="link-secondary text-decoration-none position-relative">News
+        <h1> 
+          <a href="/news" class="link-secondary text-decoration-none position-relative">Wiadomości
             <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if newsCount > 99 %}99+{%else%}{{newsCount}}{%endif%}</span>
           </a>
+          Zamieszkania
         </h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
@@ -46,11 +48,12 @@
     </div>
     <div id="jobs">
       <div class="d-flex justify-content-center">
-        <h1 class="text-dark">Home 
-            <a href="/jobs" class="link-secondary text-decoration-none position-relative">Job
+        <h1 class="text-dark"> 
+          <a href="/jobs" class="link-secondary text-decoration-none position-relative">Oferty Pracy
               <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger">{% if jobsCount > 99 %}99+{%else%}{{jobsCount}}{%endif%}</span>
             </a>
-          Offers</h1>
+            Zamieszkania
+          </h1>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         {% for job in jobs %}

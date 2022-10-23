@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Map{% endblock %}
+{% block title %}Mapa{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/map.css' %}">
@@ -10,12 +10,12 @@
 <form method="POST">
   {% csrf_token %}
   <div class="position-absolute start-50 top-50 translate-middle d-flex flex-column align-items-center justify-content-center gap-2">
-    <input id="filter1" class="btn btn-success" value="Show only your city markers">
-    <input id="filter2" class="btn btn-success" value="Show all markers">
+    <h4>Pokazuj znaczniki:</h4>
+    <input id="filter1" class="btn btn-success" value="Tylko z twojego miasta">
+    <input id="filter2" class="btn btn-success" value="Wszystkie">
   </div>
 </form>
 <div id="map"></div>
-  {% comment %} <script src="{% static 'js/main.js' %}"></script> {% endcomment %}
   <script type="text/javascript">
     let map;
     let markers = [];
@@ -40,14 +40,13 @@
       }
     }
     function initialize() {
-      // Do zoptymalizowania żeby brało geocoding z miasta usera  
       const {{userHomeMarker.title}} = {lat: {{userHomeMarker.latitude}}, lng: {{userHomeMarker.longitude}}}
       {% for marker in allMarkers %}
       const {{marker.title}} = {lat: {{marker.latitude}}, lng: {{marker.longitude}}}
       {% endfor %}
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
-        center: {{userLocation}} // zmienić na dynamiczne,
+        center: {{userLocation}},
       });
       map.addListener("zoom_changed", () => {
         // console.log(map.getZoom());

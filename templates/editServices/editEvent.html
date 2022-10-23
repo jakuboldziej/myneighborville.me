@@ -6,29 +6,29 @@
 
 {% block main %}
 <span class="d-flex align-items-center justify-content-center">
-    <h1>Edit Event</h1>
+    <h1>Edytuj wydarzenie</h1>
 </span>
 <form method="POST">
 {% csrf_token %}
 <div class="d-flex p-2 justify-content-center align-items-center flex-column gap-2">
         <div class="events card text-center text-bg-secondary m-2" style="width: 100%;">
             <div class="card-body d-flex justify-content-center align-items-center flex-column gap-2">
-                <h3>Title: <input class="form-control text-center" type="text" name="title" value="{{event.title}}"></h3>
-                <h3>Description: <textarea class="form-control" type="text" name="description" style="width: 270px;">{{event.description}}</textarea></h3>
-                <h3>Start Date: <input class="form-control" type="datetime-local" name="dateStart" value="{{event.dateStart.year}}-{{event.dateStart.month}}-{{event.dateStart.day}}T{{event.dateStart.time}}"></h3>
-                <h3>End Date: <input class="form-control" type="datetime-local" name="dateEnd" value="{{event.dateEnd.year}}-{{event.dateEnd.month}}-{{event.dateEnd.day}}T{{event.dateEnd.time}}"></h3>
+                <h3>Tytuł: <input class="form-control text-center" type="text" name="title" value="{{event.title}}"></h3>
+                <h3>Treść: <textarea class="form-control" type="text" name="description" style="width: 270px;">{{event.description}}</textarea></h3>
+                <h3>Początek: <input class="form-control" type="datetime-local" name="dateStart" value="{{event.dateStart.year}}-{{event.dateStart.month}}-{{event.dateStart.day}}T{{event.dateStart.time}}"></h3>
+                <h3>Koniec: <input class="form-control" type="datetime-local" name="dateEnd" value="{{event.dateEnd.year}}-{{event.dateEnd.month}}-{{event.dateEnd.day}}T{{event.dateEnd.time}}"></h3>
                 <div class="accordion" id="accordionExample" style="width: 200px;">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                          Participants - {{event.participants.count}}
+                          Uczestnicy - {{event.participants.count}}
                         </button>
                       </h2>
                       <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="accordion-body d-flex flex-column gap-2">
                             {% for user in event.participants.all %}
                             <ul class="list-group">
-                                <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a> - <a class="text-decoration-none" href="mailto: {{user.user.email}}">{{user.user.email}}</a></li><a href="/delete_user_from_event/{{event.id}}/{{user.user.id}}" class="btn btn-danger">Delete</a>
+                                <li class="list-group-item"><a class="text-decoration-none" href="/profile/{{user.user}}">{{user.user.username}}</a> - <a class="text-decoration-none" href="mailto: {{user.user.email}}">{{user.user.email}}</a></li><a href="/delete_user_from_event/{{event.id}}/{{user.user.id}}" class="btn btn-danger">Usuń</a>
                             </ul>
                             {% endfor %}
                         </div>
@@ -37,8 +37,8 @@
                 </div>
             </div>
         </div>
-        <input type="submit" class="btn btn-success" value="Save">
-        <a href="/delete_event/{{event.id}}" type="button" class="btn btn-danger">Delete</a>
+        <input type="submit" class="btn btn-success" value="Zapisz">
+        <a href="/delete_event/{{event.id}}" type="button" class="btn btn-danger">Usuń</a>
     </div>
 </form>
 {% endblock %}

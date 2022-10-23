@@ -1,25 +1,59 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Settings{% endblock %}
+{% block title %}Ustawienia{% endblock %}
 {% block head %}
 {% endblock %}
 
 {% block main %}
 <span style="display: flex; align-items: center; justify-content: center;">
-    <h1>Settings</h1>
+    <h1>Ustawienia</h1>
 </span>
 <div class="d-flex p-2 justify-content-center">
       <div class="event card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body d-flex justify-content-center align-items-center gap-2">
           <form method="POST">
           {% csrf_token %}
-          <h3>Username: <input class="form-control text-center" type="text" name="username" value="{{currentUser.user.username}}"></h3>
-          <h3>E-mail: <input class="form-control text-center" type="text" name="email" value="{{currentUser.user.email}}"></h3>
-          <h3>Location: <input class="form-control text-center" type="text" name="location" value="{{currentUser.location}}"></h3>
-          <a href="/changePassword" type="button" class="btn btn-warning">Chane password</a><br><br>
-          <input type="submit" class="btn btn-success" value="Save">
+          <h3>Nazwa użytkownika: </h3><input class="form-control text-center" type="text" name="username" value="{{currentUser.user.username}}">
+          <h3>E-mail: </h3><input class="form-control text-center" type="text" name="email" value="{{currentUser.user.email}}">
+          <h3>Lokalizacja: </h3>
+          <div class="input-group mb-3">
+            <input id="address" class="form-control text-center" type="text" name="address" value="{{currentUser.location}}" aria-describedby="button-addon"><br>
+            <input type="button" id="button-addon" class="btn btn-primary" onclick="codeAddress()" value="Zmień">
+            <input class="d-none" id="changingLocation" name="changingLocation">
+          </div>
+          <input class="d-none" id="location" name="location">
+          <a href="/changePassword" type="button" class="btn btn-warning">Zmień hasło</a><br><br>
+          <input type="submit" id="save" class="btn btn-success" value="Zapisz">
           </form>
         </div>
       </div>
 </div>
+<div id="map" class="d-none"></div>
+<script>
+  let geocoder;
+  let map;
+  function initialize() {
+    geocoder = new google.maps.Geocoder();
+    const mapOptions = {
+      zoom: 8,
+      center: {lat: 51.1079, lng: 17.0385}
+    }
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  }
+  function codeAddress() {
+    const address = document.getElementById('address').value;
+    geocoder.geocode({ 'address': address}, function(results, status) {
+      document.getElementById('location').value = results[0].geometry.location;
+    });
+  }
+</script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initialize">
+</script>
+<script>
+  $(document).on('click', '#button-addon', function(e){
+    const changingLocation = $("#changingLocation")
+    changingLocation.val("changing")
+  });
+</script>
 {% endblock %}

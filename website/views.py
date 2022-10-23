@@ -1,10 +1,9 @@
-from tabnanny import check
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
 
@@ -62,7 +61,8 @@ def map(request):
 @login_required
 def home_list(request):
     user = WebsiteUser.objects.get(id=request.user.id)
-    marker = Marker.objects.get(title=user.location)
+    userLocation = user.location.replace(" ", "_").replace(',', '')
+    marker = Marker.objects.get(title=userLocation)
     jobs = marker.jobs.all()
     events = marker.events.all()
     news = marker.news.all()
@@ -79,10 +79,10 @@ def filter(request):
     if request.POST['action']:
         filter = request.POST['filter']
         result = ''
-        if filter == "All":
-            result = "City"
+        if filter == "Wszystko":
+            result = "Miasto"
         else:
-            result = "All"
+            result = "Wszystko"
         data = {
             'result': result,
         }
@@ -111,14 +111,97 @@ def profileSettings(request, nick):
     if request.method == "POST":
         username = request.POST["username"]
         location = request.POST["location"]
+        address = request.POST["address"]
         email = request.POST["email"]
         
+        news = News.objects.filter(location=address).count()
+        jobs = Job.objects.filter(location=address).count()
+        events = Event.objects.filter(location=address).count()
+
         user = User.objects.get(username=nick)
         websiteUser = WebsiteUser.objects.get(user=user)
 
+        if request.POST["changingLocation"]:
+            newAddress = address.replace(" ", "_").replace(',', '')
+            userLocation = websiteUser.location
+            userLocation = userLocation.replace(" ", "_").replace(',', '')
+            oldMarker = Marker.objects.get(title=userLocation)
+            try:
+                if oldMarker.news.all().count() != 0 or oldMarker.jobs.all().count() != 0 or oldMarker.events.all().count() != 0:
+                    oldMarker.content = ''
+
+                    if oldMarker.elements() > 1:
+                        oldMarker.type = "Multiple"
+                        if oldMarker.news.all().count() != 0:
+                            for n in oldMarker.news.all():
+                                oldMarker.content += '<a class="object_link" href="/events/' + str(n.id) + '">' + n.title + '</a>\n</br>'
+
+                        if oldMarker.jobs.all().count() != 0:
+                            for job in oldMarker.jobs.all():
+                                oldMarker.content += '<a class="object_link" href="/events/' + str(job.id) + '">' + job.title + '</a>\n</br>'
+
+                        if oldMarker.events.all().count() != 0:
+                            for event in oldMarker.events.all():
+                                oldMarker.content += '<a class="object_link" href="/events/' + str(event.id) + '">' + event.title + '</a>\n</br>'
+                    else:
+                        object = None
+                        objectType = None
+                        if oldMarker.jobs.count() == 1:
+                            object = oldMarker.jobs.first()
+                            objectType = "jobs"
+                        elif oldMarker.events.count() == 1:
+                            object = oldMarker.events.first()
+                            objectType = "events"
+                        elif oldMarker.news.count() == 1:
+                            object = oldMarker.news.first()
+                            objectType = "news"
+                        oldMarker.content = f"""
+                            <div class="text-center">
+                            <a class="object_title" href='/{objectType}/{object.id}'><h2>{object.title}</h2></a></br>
+                            <h3 class="object_description">{object.description}</h3>
+                            </div>
+                            """
+                        oldMarker.type = objectType.capitalize()
+
+                    oldMarker.save()
+                    
+                else:
+                    oldMarker.delete()
+
+                content = ''
+                if news != 0 or jobs != 0 or events != 0:
+                    content = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                else:
+                    content = '<h2>Home</h2>'
+
+                location = location[1:-1]
+                locSplit = location.split(", ")
+                lat = locSplit[0]
+                lng = locSplit[1]
+                newMarker = Marker.objects.create(
+                    latitude=lat,
+                    longitude=lng,
+                    title=newAddress,
+                    content=content,
+                    type="Home",
+                )
+                newMarker.save()
+            except:
+                content = ''
+                if news != 0 or jobs != 0 or events != 0:
+                    content = '<h2>Home</h2><a class="object_link" href="/home_list"><h3>Info</h2></a>'
+                else:
+                    content = '<h2>Home</h2>'
+
+                existingMarker = Marker.objects.get(title=newAddress)
+                existingMarker.type = "Home"
+                existingMarker.content = content
+                existingMarker.save()
+
+            websiteUser.location = address
+
         user.username = username
         user.email = email
-        websiteUser.location = location
         user.save()
         websiteUser.save()
 
@@ -127,8 +210,10 @@ def profileSettings(request, nick):
         owner = User.objects.get(username=nick)
         owner = WebsiteUser.objects.get(user=owner)
 
+        api_key = settings.GOOGLE_API_KEY
         context = {
             'currentUser': owner,
+            'api_key': api_key,
         }
         if owner.user == request.user:
             return render(request, 'settings.html', context)

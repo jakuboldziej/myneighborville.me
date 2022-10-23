@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Add Event{% endblock %}
+{% block title %}Dodaj wydarzenie{% endblock %}
 {% block head %}
 <style>
 #form_contener{
@@ -18,9 +18,10 @@
 }
 @media only screen and (max-width: 600px) {
   #map {
-    margin-top: 570px;
+    position: relative;
+    top: 600px;
     width: 100%;
-    height: 500px;
+    height: 70vh;
   }
   #form_contener{
     left: 50%;
@@ -34,34 +35,33 @@
 
 {% block main %}
 <div id="form_contener" class="translate-middle">
-  <h1>Add New Event</h1>
+  <h1>Dodaj nowe wydarzenie</h1>
 <form method="POST" class="form-group">
     {% csrf_token %}
     {{form}}
-    
     <div class="mb-3">
-      <label class="form-label">Title</label>
-      <input type="text" name="title" class="form-control" placeholder="Title..." maxlength='100' required>
+      <label class="form-label">Tytuł</label>
+      <input type="text" name="title" class="form-control" placeholder="Tytuł..." maxlength='100' required>
     </div>
     <div class="mb-3">
-      <label class="form-label">Description</label>
-      <textarea id="description" name="description" class="form-control position-relative" placeholder="Description..." maxlength='2000' required></textarea>
+      <label class="form-label">Treść</label>
+      <textarea id="description" name="description" class="form-control position-relative" placeholder="Treść..." maxlength='2000' required></textarea>
     </div>
     <div class="mb-3">
-      <label class="form-label">Start Date</label>
+      <label class="form-label">Początek</label>
       <input type="datetime-local" name="dateStart" class="form-control" required>
     </div>
     <div class="mb-3">
-      <label class="form-label">End Date</label>
+      <label class="form-label">Koniec</label>
       <input type="datetime-local" name="dateEnd" class="form-control" required>
     </div>
-    <label class="form-label">Location</label>
+    <label class="form-label">Lokalizacja</label>
       <div class="input-group mb-3">
         <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
-        <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
+        <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Znajdź">
         <input id="location" name="location" class="d-none">
       </div>
-    <button id="submit" type="submit" class="btn btn-success" disabled>Add</button>
+    <button id="submit" type="submit" class="btn btn-success" disabled>Dodaj</button>
   </form>
 </div>
 <div id="map"></div>

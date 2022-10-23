@@ -5,17 +5,32 @@
 <style>
   .apply_count{
     position: absolute;
-    bottom: -5px;
+    bottom: -8px;
     left: 2px;
     opacity: 0.5;
     color: black;
   }
   .location{
     position: absolute;
-    bottom: -5px;
+    top: -5px;
     right: 4px;
     opacity: 0.5;
     color: black;
+  }
+  @media only screen and (max-width: 600px) {
+    .location{
+      position: absolute;
+      top: -5px;
+      left: 4px;
+      opacity: 0.5;
+      color: black;
+      width: 355px;
+      overflow: hidden;
+      white-space:nowrap;
+      text-overflow: ellipsis;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
   }
 </style>
 {% endblock %}
@@ -29,7 +44,7 @@
       <div class="job card text-center text-bg-secondary m-2" style="width: 100%;">
         <div class="card-body">
           <h3 class="border-bottom">{{job.description}}</h3>
-          <h5>Created by: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
+          <h5>Stworzone przez: <a class="text-decoration-none" href="/profile/{{owner}}">{{owner}}</a></h5>
           <h5 class="apply_count">
             <form method="POST" action="{% if applied %}/unapply{% else %}/apply{% endif %}/{{job.id}}" id="form">
             {% csrf_token %}
@@ -48,10 +63,20 @@
             <span id="counter">{{job.people.count}}</span>
           </form>
           </h5>
-          <h5 class="location">Location: {{job.location}}</h5>
+          <h5 class="location">Lokalizacja: <a id="btnModal" data-bs-toggle="modal" data-bs-target="#exampleModal">{{job.location}}</a></h5>
         </div>
       </div>
 </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{job.location}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   $(document).on('click', '#submit', function(e){
@@ -67,7 +92,6 @@
       success: function(json){
         document.getElementById("counter").innerHTML = json['result']
         if (json['applied']){
-          console.log($("i"))
           $("#image").attr('src', '{% static "images/applied.png" %}')
         }else{
           $("#image").attr('src', '{% static "images/apply.png" %}')

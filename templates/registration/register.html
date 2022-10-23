@@ -14,56 +14,55 @@
   {% csrf_token %}
   {{form}}
   <div class="mb-3">
-    <label class="form-label">* Username</label>
+    <label class="form-label">* Nazwa użytkownika</label>
     <input type="text" name="username" class="form-control" placeholder="JohnDoe" required autofocus>
   </div>
   <div class="mb-3">
-    <label class="form-label">* First Name</label>
+    <label class="form-label">* Imię</label>
     <input type="text" name="firstName" class="form-control" placeholder="John" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">* Last Name</label>
+    <label class="form-label">* Nazwisko</label>
     <input type="text" name="lastName" class="form-control" placeholder="Doe" required>
   </div>
   <div class="mb-3">
     <label class="form-label">* E-mail</label>
     <input type="email" name="email" class="form-control" placeholder="john.doe@gmail.com" required>
   </div>
-  *<a href="#" id="btnModal" data-bs-toggle="modal" data-bs-target="#exampleModal">Location</a>
+  *<a href="#" id="btnModal" data-bs-toggle="modal" data-bs-target="#exampleModal">Adres</a>
   <div class="input-group mb-3">
-    <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
+      <input type="text" name="address" id="address" class="form-control" placeholder="Wrocław, Sucha 1" aria-describedby="button-addon" required>
       <input type="button" id="button-addon" class="btn btn-outline-secondary" onclick="codeAddress()" value="Find">
       <input id="location" name="location" class="d-none">
     </div>
   <div class="mb-3">
-    <label class="form-label">* Password</label>
+    <label class="form-label">* Hasło</label>
     <input type="password" id="password1" name="password" class="form-control" placeholder="*********" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">* Confirm Password</label>
+    <label class="form-label">* Potwierdź hasło</label>
     <input type="password" id="password2"name="password2" class="form-control" placeholder="*********" required>
   </div>
-  <p>Already have a account? Log In <a href="/login" class="text-decoration-none">Here</a>.</p>
-  <button id="register" type="submit" class="btn btn-success" disabled>Register</button>
+  <p>Posiadasz już konto? Zaloguj się <a href="/login" class="text-decoration-none">tutaj</a>.</p>
+  <button id="register" type="submit" class="btn btn-success" disabled>Rejestracja</button>
 </form>
 <br>
 <div id="alert1" class="alert alert-danger" role="alert"></div>
 <div id="alert2" class="alert alert-danger" role="alert"></div>
 </div>
-<!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Location Guide</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Przewodnik jak wprowadzać lokalizacje</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <h5>You can type your full address or only your city name.</h5>
-        <h5>Please type your location like this: [City], [Street name] [Home number] or just [City].</h5>
-        <h5>Example: Wrocław, Sucha 1</h5>
-        <h5>Locations are necessary for displaying your local events, news and job offers.</h5>
-        <h5>For your personal privacy locations are not available for public access.</h5>
+        <h5>Możesz wpisać swój pełny adres lub tylko nazwę twojego miasta.</h5>
+        <h5>Proszę wpisywać swoją lokalizację następująco: [Miasto], [Nazwa ulicy] [Numer domu] lub po prostu [Miasto].</h5>
+        <h5>Przykład: Wrocław, Sucha 1</h5>
+        <h5>Lokalizacja jest potrzebna aby wyświetlać twoje lokalne wydarzenia, wiadomości oraz oferty pracy.</h5>
+        <h5>Dla prywatności naszych użytkowników lokalizacje nie są publicznie dostępne.</h5>
       </div>
     </div>
   </div>
@@ -112,7 +111,7 @@
   $(document).ready(function(){
     password1.on('change', function(e){
       if(password1.val().length < 6){
-        alert1.text("Password must be at least 6 characters long")
+        alert1.text("Hasło musi zawierać minimum 6 znaków")
         alert1.show()
       }
       else{
@@ -121,7 +120,7 @@
     });
     password2.on('change', function(e){
       if(password1.val() != password2.val()){
-        alert2.text("Passwords don't match")
+        alert2.text("Hasła się nie zgadzają")
         alert2.show()
       }else{
         alert2.hide()
@@ -130,7 +129,7 @@
     setInterval(
       function(){
         if(password1.val() != password2.val() && password2.val() != ""){
-          alert2.text("Passwords don't match")
+          alert2.text("Hasła się nie zgadzają)
           alert2.show()
         }else{
           alert2.hide()

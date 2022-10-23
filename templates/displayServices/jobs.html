@@ -24,9 +24,15 @@
     height: 200px;
     overflow: hidden;
   }
+  #filter{
+    width: 90px;
+  }
   @media only screen and (max-width: 600px) {
     .filters {
-      top: 50px;
+      top: 75px;
+    }
+    .jobsTable{
+      margin-top: 25px;
     }
   }
   </style>
@@ -34,12 +40,12 @@
 {% block main %}
 <div class="filters p-3 position-absolute">
   <div class="input-group mb-3">
-    <span class="filter input-group-text">Filter</span>
-    <button type="submit" id="filter" class="btn btn-success">City</button>
+    <span class="filter input-group-text">Filtr</span>
+    <button type="submit" id="filter" class="btn btn-success">Miasto</button>
   </div>
 </div>
 <span style="display: flex; align-items: center; justify-content: center;">
-    <h1>Jobs</h1>
+    <h1>Prace</h1>
 </span>
   <div class="jobsTable d-flex flex-wrap gap-2 p-2">
     {% for job in jobs %}
@@ -49,7 +55,7 @@
             <h3 class="description">{{job.description}}</h3>
             {% for user in users %}
             {% if user.id == job.userId %}
-            <h5 class="createdby">Created by: <a class="link-dark text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
+            <h5 class="createdby">Stworzone przez: <a class="link-dark text-decoration-none" href="/profile/{{user}}">{{user}}</a></h5>
             {% endif %}
             {% endfor %}
           </div>
@@ -62,10 +68,10 @@
     $(document).on('click', '#filter', function(e){
       e.preventDefault()
       filter = $("#filter")
-      if (filter.text() == "All"){
-        filter.text("City") 
+      if (filter.text() == "Wszystko"){
+        filter.text("Miasto") 
       }else{
-        filter.text("All") 
+        filter.text("Wszystko") 
       }
       $.ajax({
         type: 'POST',
@@ -76,7 +82,7 @@
           action: 'post'
         },
         success: function(json){
-          if (json['result'] == "All"){
+          if (json['result'] == "Wszystko"){
             $(".city").show()
             $(".all").show()
           }else{
