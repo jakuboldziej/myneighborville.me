@@ -14,6 +14,8 @@
           <form method="POST">
           {% csrf_token %}
           <h3>Nazwa użytkownika: </h3><input class="form-control text-center" type="text" name="username" value="{{currentUser.user.username}}">
+          <h3>Imię: </h3><input class="form-control text-center" type="text" name="firstName" value="{{currentUser.user.first_name}}">
+          <h3>Nazwisko: </h3><input class="form-control text-center" type="text" name="lastName" value="{{currentUser.user.last_name}}">
           <h3>E-mail: </h3><input class="form-control text-center" type="text" name="email" value="{{currentUser.user.email}}">
           <h3>Lokalizacja: </h3>
           <div class="input-group mb-3">

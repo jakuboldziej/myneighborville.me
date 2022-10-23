@@ -2,46 +2,54 @@
     width: 100%; 
     padding: 10px;
 }
-#lewy{
+#left{
     position: relative;
     color: black;
     width: 50%;
     min-height: 100vh;
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
     border-top: 1px solid black;
 }
-#lewy-content{
+#left-content{
     display: flex;
     flex-wrap:wrap;
-    align-content: flex-start;
+    align-items: center;
+    justify-content: center;
 }
-#prawy{
+#right{
+    padding-top: 5px;
     position: relative;
     color: black;
     width: 50%;
     min-height: 100vh;
-    padding: 10px;
+    padding-bottom: 10px;
+    padding-top: 10px;
     border-bottom: 1px solid black;
     border-top: 1px solid black;
 }
-#prawy-content{
+#right-content{
     display: flex;
     flex-wrap:wrap;
-    align-content: flex-start;
+    align-items: center;
+    justify-content: center;
 }
-#dolny{
+#bottom{
     position: relative;
     color: black;
     width: 100%;
     min-height: 50vh;
-    padding: 10px;
+    padding-top: 10px;
+
+    padding-bottom: 10px;
 }
-#dolny-content{
+#bottom-content{
     display: flex;
     flex-wrap:wrap;
-    align-content: flex-start;
+    align-items: center;
+    justify-content: center;
 }
 #loadMoreNews, #loadMoreEvents, #loadMoreJobs{
     border: none;
@@ -76,4 +84,12 @@
     .btnadd{
         flex-direction: column;
     }
+}
+#counter{
+    display:flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    left: 5px;
+    gap: 2px;
 }

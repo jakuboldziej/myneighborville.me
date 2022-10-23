@@ -37,6 +37,7 @@
 .filters{
     height: 40px;
     z-index: 999;
+    margin-left: 5px;
 }
 #filter{
     width: 90px;

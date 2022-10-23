@@ -10,22 +10,27 @@
         <div id="baner" class="d-flex justify-content-center align-items-center gap-3">
             <h2>{{currentUser.user.username}}</h2>
         </div>
-        <div id="lewy">
+        <div id="left">
             <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
                 <a class="btnadd btn btn-success" href="/add_event">Dodaj</a>
                 {% endif %}
                 <h1>Wydarzenia</h1>
             </span>
-            <div id="lewy-content">
+            <div id="left-content">
                 {% for event in userEvents %}
-                <div onclick="location.href='/events/{{event.id}}';" id="events_{{ forloop.counter }}"class="events card text-center text-bg-secondary m-2 position-relative" style="width: 18rem; display:{% if forloop.counter > loadEvents %}none;{% else %}block;{% endif %}">
+                <div onclick="location.href='/events/{{event.id}}';" id="events_{{ forloop.counter }}"class="events card text-center text-bg-secondary m-2" style="width: 18rem; display:{% if forloop.counter > loadEvents %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
                       <h5 class="card-title">{{event.title}}</h5>
                       <p class="card-text">{{event.description}}</p>
                     </div>
                     {% if request.user.id == event.userId %}
                     <a href="/events/edit_event/{{event.id}}" class="btnedit btn btn-success">Edytuj</a>
+                    {% endif %}
+                    {% if user.id == event.userId %}
+                    <span id="counter">
+                        <h5 class="person_count"><img src="{% static 'images/person.png' %}" height=25>{{event.participants.count}}</h5>{{job.people.count}}
+                    </span>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -34,14 +39,14 @@
                 <button id="loadMoreEvents" class="border-none">Load more...</button>
             </div>
         </div>
-        <div id="prawy">
+        <div id="right">
             <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
                 <a class="btnadd btn btn-success" href="/add_news">Dodaj</a>
                 {% endif %}
                 <h1>Aktualności</h1>
             </span>
-            <div id="prawy-content">
+            <div id="right-content">
                 {% for news in userNews %}
                 <div onclick="location.href='/news/{{news.id}}';" id="news_{{ forloop.counter }}" class="news card text-center text-bg-secondary m-2" style="width: 18rem; display:{% if forloop.counter > loadNews %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
@@ -58,14 +63,14 @@
                 <button id="loadMoreNews" class="border-none">Load more...</button>
             </div>
         </div>
-        <div id="dolny">
+        <div id="bottom">
             <span class="btnadd">
                 {% if request.user.id == currentUser.id %}
                 <a class="btn btn-success" href="/add_job">Dodaj</a>
                 {% endif %}
                 <h1>Oferty pracy</h1>
             </span>
-            <div id="dolny-content">
+            <div id="bottom-content">
                 {% for job in userJobs %}
                 <div onclick="location.href='/jobs/{{job.id}}';" id="jobs_{{ forloop.counter }}" class="jobs card text-center text-bg-secondary m-2" style="width: 18rem; display:{% if forloop.counter > loadJobs %}none;{% else %}block;{% endif %}">
                     <div class="card-body">
@@ -74,6 +79,11 @@
                     </div>
                     {% if job.userId == request.user.id %}
                     <a href="/jobs/edit_job/{{job.id}}" class="btnedit btn btn-success">Edytuj</a>
+                    {% endif %}
+                    {% if user.id == job.userId %}
+                    <span id="counter">
+                        <h5 class="person_count"><img src="{% static 'images/person.png' %}" height=25>{{event.participants.count}}</h5>{{job.people.count}}
+                    </span>
                     {% endif %}
                 </div>
                 {% endfor %}

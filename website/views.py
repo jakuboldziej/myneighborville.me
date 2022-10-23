@@ -6,9 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
-from django.forms.models import model_to_dict
 
-import json
 import datetime
 
 from .models import WebsiteUser, Event, News, Marker, Job
@@ -30,6 +28,8 @@ def index(request):
     newsCount = news.count()
     jobsCount = jobs.count()
 
+    userLocation = websiteUser.location.split(", ")[0]
+
     context = {
         'events': events[:displayedElements],
         'news': news[:displayedElements],
@@ -37,7 +37,7 @@ def index(request):
         'eventsCount': eventsCount,
         'newsCount': newsCount,
         'jobsCount': jobsCount,
-        'userLocation': websiteUser.location,
+        'userLocation': userLocation,
     }
     return render(request, 'index.html', context)
 
@@ -143,7 +143,6 @@ def profile(request, nick):
     }
     return render(request, 'profile.html', context)
 
-
 @login_required
 def profileSettings(request, nick):
     if request.method == "POST":
@@ -248,6 +247,7 @@ def profileSettings(request, nick):
         owner = User.objects.get(username=nick)
         owner = WebsiteUser.objects.get(user=owner)
 
+        print(owner.user.first_name)
         api_key = settings.GOOGLE_API_KEY
         context = {
             'currentUser': owner,
@@ -263,7 +263,7 @@ def profileSettings(request, nick):
 def events(request):
     users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
-    events = Event.objects.all()
+    events = Event.objects.all().order_by('-id')
     
     userLocation = user.location.split(', ')[0]
 
@@ -435,7 +435,7 @@ def deleteUserFromEvent(request, eventId, userId):
 
     event.participants.remove(user)
     event.save()
-    return redirect('/jobs/edit_job/' + str(eventId))
+    return redirect('/events/edit_event/' + str(eventId))
 
 @login_required
 def participate(request):
@@ -467,7 +467,7 @@ def participate(request):
 def jobs(request):
     users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
-    jobs = Job.objects.all()
+    jobs = Job.objects.all().order_by('-id')
 
     userLocation = user.location.split(', ')[0]
 
@@ -657,7 +657,7 @@ def apply(request):
 def news(request):
     users = WebsiteUser.objects.all()
     user = WebsiteUser.objects.get(id=request.user.id)
-    news = News.objects.all()
+    news = News.objects.all().order_by('-id')
 
     userLocation = user.location.split(', ')[0]
 

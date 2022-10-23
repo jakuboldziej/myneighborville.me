@@ -9,13 +9,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m6u#lt5%1yaldvjoiog=&^s-07j$$7g2c6yh(cd7=loo7d(yay'
+# SECRET_KEY = 'django-insecure-m6u#lt5%1yaldvjoiog=&^s-07j$$7g2c6yh(cd7=loo7d(yay'
+f = open("/var/www/secret.txt", "r")
+SECRET_KEY = f.read()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Production
-# DEBUG = False
+DEBUG = False
 # Development
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = ['139.162.150.118', 'www.myneighborville.me', 'myneighborville.me', '127.0.0.1']
 

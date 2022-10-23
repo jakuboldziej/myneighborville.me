@@ -30,7 +30,7 @@
 }
 @media only screen and (max-width: 600px) {
   #accordion{
-    top: 15%;
+    top: 120px;;
   }
   .gm-style-iw-d{
     max-width: 70vw;

@@ -44,6 +44,7 @@
 }
 .filters{
   z-index: 999;
+  margin-left: 5px;
 }
 @media only screen and (max-width: 600px) {
   .filters{
@@ -65,7 +66,7 @@
 <span style="display: flex; align-items: center; justify-content: center;">
     <h1>Wydarzenia</h1>
 </span>
-  <div class="eventsTable d-flex flex-wrap gap-2 p-2">
+  <div class="eventsTable d-flex flex-wrap justify-content-center gap-2 p-2">
     {% for event in events %}
     <div onclick="location.href='/events/{{event.id}}';" class="{% if userLocation in event.location %}city{% else %}all{% endif %} event card text-center text-bg-secondary m-2" style="width: 27.5rem;">
       <div class="card-body">
