@@ -1,4 +1,4 @@
-https://myneighborville.me
+(https://myneighborville.me) - deprecated
 
 Aplikację opracowali: Jakub Ołdziejewski, Krzysztof Wiśniewski, Rafał Popiel ze szkoły Elektroniczne Zakłady Naukowe.
 
